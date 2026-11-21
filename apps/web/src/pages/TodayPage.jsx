@@ -59,8 +59,21 @@ export default function TodayPage({
               disabled={drawing}
               aria-label="翻开今天的牌"
             >
-              <img className="peek-card peek-left" src={getCard(20).image} alt="" />
-              <img className="peek-card peek-right" src={getCard(18).image} alt="" />
+              <img
+                className="peek-card peek-left"
+                src={getCard(20).image}
+                alt=""
+                width="360"
+                height="600"
+                fetchPriority="high"
+              />
+              <img
+                className="peek-card peek-right"
+                src={getCard(18).image}
+                alt=""
+                width="360"
+                height="600"
+              />
               <span className="card-back">
                 <span className="card-back-border">
                   <span className="deck-top">A MOMENT FOR YOU</span>
@@ -79,7 +92,13 @@ export default function TodayPage({
               onClick={() => setModal({ type: 'card', cardId: card.id })}
               aria-label={`查看${card.name}牌意`}
             >
-              <img src={card.image} alt={`${card.name} · ${card.english}`} />
+              <img
+                src={card.image}
+                alt={`${card.name} · ${card.english}`}
+                width="360"
+                height="600"
+                fetchPriority="high"
+              />
               <span className="card-zoom">
                 <Plus size={14} />
               </span>

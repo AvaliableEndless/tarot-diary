@@ -1,0 +1,1042 @@
+:root {
+  --muted: #65715f;
+}
+
+body {
+  font-size: 14px;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.app-shell {
+  max-width: 1280px;
+  padding: 0 40px 56px;
+}
+.app-header {
+  height: 88px;
+  gap: 28px;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.desktop-capture {
+  min-height: 42px;
+  font-size: 13px;
+  padding: 9px 17px;
+}
+.desktop-nav {
+  gap: 28px;
+}
+.desktop-nav button {
+  font-size: 14px;
+  min-width: 56px;
+}
+.icon-button {
+  width: 44px;
+  height: 44px;
+}
+.text-button {
+  min-height: 44px;
+  font-size: 12px;
+}
+.workspace {
+  gap: 48px;
+  padding-top: 32px;
+  grid-template-columns: minmax(0, 1fr) 292px;
+}
+.page-heading h1 {
+  font-size: 28px;
+}
+.heading-sub {
+  font-size: 13px;
+}
+.eyebrow {
+  font-size: 11px;
+}
+.side-content {
+  padding-left: 28px;
+}
+.side-date {
+  font-size: 9px;
+}
+.section-line h2 {
+  font-size: 14px;
+}
+.section-line > span {
+  font-size: 11px;
+}
+.yesterday-row small {
+  font-size: 11px;
+}
+.yesterday-row strong {
+  font-size: 14px;
+  line-height: 1.85;
+}
+.round-arrow {
+  width: 32px;
+  height: 32px;
+}
+.skip-button {
+  min-height: 44px;
+  font-size: 12px;
+}
+.week-strip small {
+  font-size: 11px;
+}
+.week-strip button {
+  min-height: 60px;
+}
+.week-strip button > span {
+  height: 32px;
+  font-size: 12px;
+}
+.entry-date {
+  font-size: 12px;
+}
+.entry-text {
+  font-size: 15px;
+}
+.entry-status {
+  font-size: 11px;
+}
+.entry.compact {
+  padding: 17px 0;
+}
+.compact .entry-date {
+  font-size: 11px;
+}
+.compact .entry-text {
+  font-size: 12px;
+}
+.sample,
+.compact .sample {
+  font-size: 9px;
+}
+.card-caption {
+  font-size: 10px;
+}
+.draw-action > span {
+  font-size: 12px;
+}
+.meaning-toggle {
+  font-size: 12px;
+}
+.meaning-detail {
+  font-size: 14px;
+  line-height: 1.9;
+}
+.daily-prompt {
+  font-size: 17px;
+}
+.saved-card-label {
+  font-size: 12px;
+}
+.today-record-button {
+  font-size: 14px;
+  min-height: 48px;
+}
+.today-quote p {
+  font-size: 16px;
+}
+.side-footer {
+  margin-top: 30px;
+}
+.side-footer > span {
+  font-size: 11px;
+}
+.bottom-nav {
+  display: none;
+}
+.toast {
+  bottom: 28px;
+}
+
+.history-workspace,
+.deck-workspace {
+  grid-template-columns: minmax(0, 1fr);
+}
+.history-layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 60px;
+  margin-top: 32px;
+}
+.calendar-section {
+  margin: 0;
+  padding: 0 0 22px;
+  border-bottom: 0;
+  align-self: start;
+  position: sticky;
+  top: 24px;
+}
+.calendar-header {
+  margin-bottom: 14px;
+}
+.calendar-header h2 {
+  font-size: 15px;
+}
+.calendar-header .icon-button {
+  width: 44px;
+  height: 44px;
+}
+.calendar-header > div {
+  gap: 0;
+}
+.calendar-header .text-button {
+  min-width: 38px;
+}
+.calendar-grid {
+  gap: 5px;
+}
+.calendar-day {
+  height: 44px;
+  font-size: 14px;
+  border-radius: 5px;
+}
+.calendar-day > i {
+  bottom: 5px;
+  width: 4px;
+  height: 4px;
+}
+.weekday {
+  font-size: 12px;
+}
+.calendar-legend {
+  font-size: 11px;
+  margin-top: 20px;
+  gap: 16px;
+  justify-content: flex-start;
+}
+.history-section {
+  min-width: 0;
+  padding: 0;
+}
+.history-section-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.filter-toggle {
+  display: none;
+}
+.filter-toggle.is-filtered {
+  background: var(--green-quiet);
+  color: var(--green);
+}
+.history-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 114px;
+  gap: 14px;
+  align-items: center;
+  margin-top: 16px;
+}
+.history-filters .search-field {
+  margin: 0;
+  width: 100%;
+  max-width: none;
+}
+.search-field {
+  min-height: 46px;
+}
+.search-field input {
+  font-size: 14px;
+}
+.status-filter select {
+  width: 100%;
+  min-height: 46px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #cfd8c8;
+  border-radius: 0;
+  font: inherit;
+  font-size: 13px;
+  color: var(--green);
+  padding: 0 4px;
+}
+.result-count {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 18px 0 5px;
+  line-height: 1.7;
+}
+.history-section .entry {
+  padding: 21px 0;
+  gap: 18px;
+}
+.history-section .entry > img {
+  width: 44px;
+  height: 74px;
+}
+.history-section .entry-text {
+  -webkit-line-clamp: 3;
+}
+.empty-day {
+  padding: 48px 16px;
+}
+.empty-day p {
+  font-size: 14px;
+  line-height: 1.8;
+}
+.deck-controls {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  margin: 20px 0 0;
+  padding: 12px 0 0;
+  background: var(--paper);
+}
+.deck-controls .search-field {
+  max-width: 400px;
+}
+.deck-controls input::-webkit-search-cancel-button {
+  display: none;
+}
+.family-tabs {
+  gap: 22px;
+  margin-top: 14px;
+  overscroll-behavior-x: contain;
+}
+.family-tabs button {
+  font-size: 14px;
+  min-height: 48px;
+  padding: 0 12px;
+}
+.collection-grid {
+  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+  gap: 32px 24px;
+  padding-top: 16px;
+}
+.collection-card strong {
+  font-size: 14px;
+  margin-top: 12px;
+}
+.collection-card small {
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.modal-backdrop {
+  top: auto;
+  bottom: var(--keyboard-offset, 0px);
+  height: var(--visible-height, 100dvh);
+  padding: 24px;
+}
+.modal-sheet {
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+  max-height: calc(var(--visible-height, 100dvh) - 48px);
+  overflow: hidden;
+}
+.modal-body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.dialog-loading {
+  min-height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+.modal-heading .icon-button {
+  width: 44px;
+  height: 44px;
+}
+.modal-heading .eyebrow {
+  font-size: 12px;
+}
+.record-question span {
+  font-size: 12px;
+}
+.record-question h2 {
+  font-size: 22px;
+}
+.review-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 20px;
+}
+.review-options > button {
+  position: relative;
+  min-width: 0;
+  height: 52px;
+  justify-content: center;
+  padding: 8px 5px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.review-options > button > svg {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 10px;
+  height: 10px;
+}
+.voice-topline {
+  font-size: 12px;
+}
+.voice-topline,
+.review-options > button,
+.record-question span,
+.transcript-heading > span,
+.record-footer,
+.card-caption {
+  color: var(--muted);
+}
+.start-record {
+  width: 62px;
+  height: 62px;
+}
+.stop-record {
+  width: 60px;
+  height: 60px;
+}
+.record-actions {
+  height: 62px;
+}
+.record-actions > span {
+  font-size: 11px;
+}
+.transcript-heading {
+  margin-top: 20px;
+}
+.transcript-heading label {
+  font-size: 13px;
+}
+.transcript-heading > span {
+  font-size: 11px;
+}
+.recorder {
+  padding-bottom: 0;
+}
+.recorder textarea {
+  font-size: 16px;
+  min-height: 110px;
+  line-height: 1.8;
+  scroll-margin-block: 28px 120px;
+}
+.record-save-area {
+  position: sticky;
+  bottom: 0;
+  background: #fafbf8;
+  padding: 16px 0 17px;
+  z-index: 2;
+  margin-top: 6px;
+}
+.record-save-area .save-button {
+  margin-top: 0;
+  min-height: 48px;
+  font-size: 14px;
+}
+.record-footer {
+  font-size: 11px;
+  margin-top: 10px;
+}
+.record-error,
+.asr-note {
+  font-size: 12px;
+}
+.audio-review audio {
+  height: 40px;
+}
+.audio-review .icon-button {
+  width: 44px;
+  height: 44px;
+}
+.card-detail > img {
+  width: 174px;
+  height: 290px;
+}
+.card-detail > p:not(.eyebrow),
+.detail-card-row p {
+  font-size: 14px;
+}
+.card-detail > .eyebrow {
+  font-size: 11px;
+}
+.question-band > span {
+  font-size: 11px;
+}
+.question-band strong {
+  font-size: 15px;
+}
+.settings-note strong {
+  font-size: 14px;
+}
+.settings-note p,
+.settings-row small {
+  font-size: 12px;
+}
+.settings-row > span {
+  font-size: 15px;
+}
+.settings-row {
+  min-height: 86px;
+}
+.discard-confirm {
+  bottom: 18px;
+  left: 18px;
+  right: 18px;
+  z-index: 5;
+}
+.discard-confirm button {
+  min-height: 44px;
+  font-size: 13px;
+}
+
+@media (min-width: 1100px) {
+  .daily-stage.is-drawn {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    align-items: center;
+    gap: 30px;
+    padding: 42px 0 30px;
+    min-height: 430px;
+  }
+  .is-drawn .card-area {
+    min-height: 350px;
+  }
+  .revealed-card {
+    width: 192px;
+    height: 320px;
+  }
+  .card-reading {
+    text-align: left;
+    padding: 0;
+  }
+  .card-reading h2 {
+    font-size: 26px;
+    margin: 16px 0 14px;
+  }
+  .card-reading h2 > span {
+    padding: 0 9px;
+  }
+  .daily-prompt {
+    margin: 0;
+    max-width: 330px;
+  }
+  .meaning-toggle {
+    margin: 9px 0 0;
+  }
+  .meaning-detail {
+    margin: 0;
+    padding-top: 4px;
+  }
+  .saved-card-label {
+    justify-content: flex-start;
+    margin: 17px 0 23px;
+  }
+  .today-record-button {
+    max-width: 300px;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1099px) {
+  .app-shell {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+  .app-header {
+    gap: 18px;
+  }
+  .desktop-nav {
+    gap: 14px;
+  }
+  .workspace {
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: 30px;
+  }
+  .history-workspace,
+  .deck-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .page-heading h1 {
+    font-size: 26px;
+  }
+  .history-layout {
+    grid-template-columns: 290px minmax(0, 1fr);
+    gap: 30px;
+  }
+  .history-filters {
+    grid-template-columns: minmax(0, 1fr) 100px;
+    gap: 9px;
+  }
+  .calendar-header h2 {
+    font-size: 14px;
+  }
+  .calendar-header .icon-button {
+    width: 40px;
+  }
+  .side-content {
+    padding-left: 20px;
+  }
+  .daily-stage.is-drawn {
+    padding-top: 27px;
+  }
+  .is-drawn .card-area {
+    min-height: 295px;
+  }
+  .revealed-card {
+    width: 160px;
+    height: 267px;
+  }
+  .card-reading {
+    padding-top: 15px;
+  }
+  .daily-prompt {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    max-width: 560px;
+    padding: 0 22px calc(108px + env(safe-area-inset-bottom));
+  }
+  .app-header {
+    height: 74px;
+    gap: 10px;
+  }
+  .desktop-capture {
+    display: none;
+  }
+  .desktop-nav {
+    display: none;
+  }
+  .header-actions {
+    gap: 0;
+  }
+  .workspace {
+    display: block;
+    padding-top: 7px;
+  }
+  .page-heading {
+    padding-right: 3px;
+  }
+  .page-heading h1 {
+    font-size: 26px;
+    line-height: 1.55;
+    margin-top: 8px;
+  }
+  .heading-sub {
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .eyebrow {
+    font-size: 11px;
+  }
+  .settings-button {
+    width: 44px;
+    height: 44px;
+  }
+  .mobile-deck {
+    width: 44px;
+    height: 44px;
+    top: -9px;
+    right: -4px;
+  }
+  .daily-stage {
+    padding-top: 20px;
+  }
+  .card-area {
+    min-height: 294px;
+  }
+  .draw-button {
+    min-height: 48px;
+    font-size: 14px;
+    max-width: 300px;
+  }
+  .draw-action {
+    gap: 12px;
+  }
+  .draw-action > span {
+    font-size: 11px;
+  }
+  .card-caption {
+    font-size: 10px;
+  }
+  .daily-stage.is-drawn {
+    display: block;
+    padding: 18px 0 19px;
+    min-height: 0;
+  }
+  .is-drawn .card-area {
+    min-height: 235px;
+  }
+  .is-drawn .revealed-card {
+    width: 125px;
+    height: 208px;
+  }
+  .card-reading {
+    text-align: center;
+    padding: 5px 0 0;
+  }
+  .card-reading h2 {
+    font-size: 24px;
+    line-height: 1.5;
+    margin: 4px 0 7px;
+  }
+  .daily-prompt {
+    font-size: 15px;
+    line-height: 1.8;
+    max-width: 330px;
+    margin: 0 auto;
+  }
+  .meaning-toggle {
+    min-height: 42px;
+    font-size: 12px;
+    margin: 0;
+  }
+  .meaning-detail {
+    padding: 5px 0 14px;
+  }
+  .today-record-button {
+    max-width: 300px;
+    min-height: 46px;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  .mobile-yesterday,
+  .is-drawn + .mobile-yesterday {
+    padding-top: 12px;
+  }
+  .section-line h2 {
+    font-size: 13px;
+  }
+  .section-line > span {
+    font-size: 11px;
+  }
+  .yesterday-row small {
+    font-size: 11px;
+  }
+  .yesterday-row strong {
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .skip-button {
+    font-size: 11px;
+    min-height: 38px;
+    margin-top: 0;
+  }
+  .round-arrow {
+    width: 30px;
+    height: 30px;
+  }
+  .bottom-nav {
+    display: flex;
+    max-width: 560px;
+    height: calc(78px + env(safe-area-inset-bottom));
+    padding: 5px 35px calc(7px + env(safe-area-inset-bottom));
+  }
+  .bottom-nav > button {
+    min-width: 52px;
+    height: 60px;
+    font-size: 11px;
+  }
+  .bottom-nav .capture-nav {
+    min-width: 64px;
+  }
+  .capture-nav > span {
+    width: 48px;
+    height: 48px;
+  }
+  .capture-nav > small {
+    font-size: 11px;
+  }
+  .keyboard-open .bottom-nav {
+    display: none;
+  }
+  .toast {
+    bottom: calc(100px + env(safe-area-inset-bottom));
+    font-size: 13px;
+  }
+  .keyboard-open .toast {
+    bottom: 20px;
+  }
+  .history-layout {
+    display: block;
+    margin-top: 14px;
+  }
+  .history .page-heading > .eyebrow {
+    display: none;
+  }
+  .calendar-section {
+    position: static;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 14px;
+  }
+  .calendar-header h2 {
+    font-size: 15px;
+  }
+  .calendar-header .icon-button {
+    width: 44px;
+  }
+  .calendar-header {
+    margin-bottom: 6px;
+  }
+  .calendar-day {
+    height: 42px;
+    font-size: 13px;
+  }
+  .weekday {
+    font-size: 12px;
+    line-height: 32px;
+  }
+  .calendar-legend {
+    margin-top: 10px;
+    font-size: 11px;
+  }
+  .history-section {
+    padding-top: 12px;
+  }
+  .filter-toggle {
+    display: inline-flex;
+  }
+  .history-filters:not(.is-open) {
+    display: none;
+  }
+  .history-section > .result-count {
+    margin-top: 4px;
+  }
+  .history-filters {
+    margin-top: 10px;
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) 105px;
+  }
+  .search-field input {
+    font-size: 16px;
+  }
+  .history-filters input {
+    font-size: 16px;
+  }
+  .status-filter select {
+    font-size: 16px;
+  }
+  .result-count {
+    margin-top: 14px;
+    font-size: 11px;
+  }
+  .history-section .entry {
+    padding: 17px 0;
+    gap: 13px;
+  }
+  .history-section .entry > img {
+    width: 36px;
+    height: 60px;
+  }
+  .entry-date {
+    font-size: 11px;
+  }
+  .entry-text {
+    font-size: 14px;
+  }
+  .entry-status {
+    font-size: 11px;
+  }
+  .deck .page-heading h1 {
+    font-size: 25px;
+  }
+  .deck-controls {
+    margin-top: 15px;
+    padding-top: 7px;
+  }
+  .deck-controls .search-field {
+    max-width: none;
+  }
+  .family-tabs {
+    gap: 5px;
+    margin-top: 10px;
+  }
+  .family-tabs button {
+    font-size: 13px;
+    padding: 0 10px;
+    min-height: 46px;
+  }
+  .collection-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 26px 15px;
+    padding-top: 13px;
+  }
+  .collection-card strong {
+    font-size: 13px;
+  }
+  .collection-card small {
+    font-size: 11px;
+  }
+  .modal-backdrop {
+    padding: 12px 0 0;
+    align-items: flex-end;
+  }
+  .modal-sheet {
+    width: 100%;
+    max-width: 560px;
+    max-height: calc(var(--visible-height, 100dvh) - 12px);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .sheet-handle {
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+  .modal-body {
+    scrollbar-gutter: auto;
+  }
+  .recorder,
+  .card-detail,
+  .entry-detail,
+  .settings-panel {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+  .modal-heading {
+    margin-bottom: 12px;
+  }
+  .modal-heading .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+  .modal-heading .eyebrow {
+    font-size: 12px;
+  }
+  .record-question h2 {
+    font-size: 21px;
+    line-height: 1.65;
+  }
+  .review-options {
+    margin-top: 17px;
+  }
+  .review-options > button {
+    font-size: 12px;
+  }
+  .voice-space {
+    padding-top: 16px;
+    padding-bottom: 12px;
+  }
+  .voice-topline {
+    font-size: 11px;
+  }
+  .waveform {
+    height: 58px;
+    margin-bottom: 14px;
+  }
+  .transcript-heading label {
+    font-size: 13px;
+  }
+  .transcript-heading > span {
+    font-size: 11px;
+  }
+  .recorder textarea {
+    font-size: 16px;
+    min-height: 110px;
+  }
+  .recorder {
+    padding-bottom: 0;
+  }
+  .record-save-area {
+    padding-bottom: 15px;
+  }
+  .record-footer {
+    font-size: 11px;
+  }
+  .card-detail > p:not(.eyebrow) {
+    font-size: 14px;
+  }
+  .card-detail > p.card-detail-prompt {
+    font-size: 16px;
+  }
+  .question-band strong {
+    font-size: 15px;
+  }
+  .settings-note strong {
+    font-size: 14px;
+  }
+  .settings-note p,
+  .settings-row small {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .app-shell {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .page-heading h1,
+  .deck .page-heading h1 {
+    font-size: 23px;
+  }
+  .daily-prompt {
+    font-size: 14px;
+  }
+  .card-area {
+    min-height: 268px;
+  }
+  .is-drawn .card-area {
+    min-height: 223px;
+  }
+  .is-drawn .revealed-card {
+    width: 118px;
+    height: 197px;
+  }
+  .card-reading h2 {
+    font-size: 23px;
+  }
+  .family-tabs {
+    gap: 0;
+  }
+  .family-tabs button {
+    padding: 0 8px;
+    font-size: 12px;
+  }
+  .calendar-grid {
+    gap: 3px;
+  }
+  .calendar-day {
+    height: 39px;
+  }
+  .calendar-header h2 {
+    font-size: 14px;
+  }
+  .history-filters {
+    grid-template-columns: minmax(0, 1fr) 98px;
+    gap: 8px;
+  }
+  .review-options > button {
+    font-size: 11px;
+  }
+  .recorder,
+  .card-detail,
+  .entry-detail,
+  .settings-panel {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+}
+
+@media (max-height: 650px) and (max-width: 760px) {
+  .record-question h2 {
+    font-size: 18px;
+  }
+  .voice-space {
+    padding-top: 10px;
+  }
+  .waveform {
+    height: 40px;
+    margin: 6px auto 10px;
+  }
+}

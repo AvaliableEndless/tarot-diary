@@ -11,9 +11,8 @@ export default function Recorder({ record, date, onClose, onSave }) {
   const TODAY = useLocalDay();
   const card = record?.cardId ? getCard(record.cardId) : null;
   const [text, setText] = useState(record?.text || '');
-  const [status, setStatus] = useState(
-    record?.status === 'pending' || !record?.status ? '' : record.status,
-  );
+  const initialStatus = reviewOptions.some(([id]) => id === record?.status) ? record.status : '';
+  const [status, setStatus] = useState(initialStatus);
   const [phase, setPhase] = useState('idle');
   const [seconds, setSeconds] = useState(0);
   const [error, setError] = useState('');
@@ -31,6 +30,11 @@ export default function Recorder({ record, date, onClose, onSave }) {
   const mounted = useRef(true);
   const pendingPermission = useRef(false);
   const audioRef = useRef();
+  const discardRef = useRef();
+  const draftRef = useRef();
+  useEffect(() => {
+    if (discard) discardRef.current?.querySelector('button')?.focus();
+  }, [discard]);
 
   useEffect(() => {
     let url = '';
@@ -109,6 +113,16 @@ export default function Recorder({ record, date, onClose, onSave }) {
           setAudio(new Blob(chunks, { type: recorder.mimeType || chunks[0].type }));
           setRemoveExistingAudio(false);
           setPhase('finished');
+        } else if (mounted.current) {
+          setPhase('idle');
+          setError((previous) => previous || '没有收到声音，可以重新录一遍，或直接写下来。');
+        }
+        stream.getTracks().forEach((track) => track.stop());
+      };
+      recorder.onerror = () => {
+        if (mounted.current) {
+          setError('录音被中断。请检查已保留的声音，或重新录制。');
+          setPhase('idle');
         }
         stream.getTracks().forEach((track) => track.stop());
       };
@@ -119,6 +133,7 @@ export default function Recorder({ record, date, onClose, onSave }) {
       recorder.start();
       startRecognition();
     } catch (err) {
+      streamRef.current?.getTracks().forEach((track) => track.stop());
       setPhase('idle');
       setError(
         err.name === 'NotAllowedError'
@@ -153,17 +168,12 @@ export default function Recorder({ record, date, onClose, onSave }) {
       setDiscard(true);
       return;
     }
-    if (
-      text !== (record?.text || '') ||
-      audio ||
-      removeExistingAudio ||
-      (status && status !== record?.status)
-    )
+    if (text !== (record?.text || '') || audio || removeExistingAudio || status !== initialStatus)
       setDiscard(true);
     else onClose();
   };
   const save = async () => {
-    if (!text.trim() && !audio && !status && !record?.audioId) return;
+    if (!canSave) return;
     setSaving(true);
     setError('');
     let audioId = removeExistingAudio ? null : record?.audioId || null;
@@ -183,6 +193,9 @@ export default function Recorder({ record, date, onClose, onSave }) {
     }
   };
   const active = ['recording', 'paused', 'processing', 'requesting'].includes(phase);
+  const canSave = Boolean(
+    text.trim() || status || audio || (!removeExistingAudio && record?.audioId),
+  );
   const dayLabel = date === TODAY ? '今天' : date === dayAgo(1) ? '昨天' : shortDate(date);
   const question = card
     ? card.question.replace(/^今天/, dayLabel)
@@ -191,7 +204,14 @@ export default function Recorder({ record, date, onClose, onSave }) {
     <div className="recorder">
       <div className="modal-heading">
         <span className="eyebrow">{dayLabel}的一句话</span>
-        <button data-recorder-close className="icon-button" onClick={close} aria-label="关闭记录">
+        <button
+          data-recorder-close
+          className="icon-button"
+          onClick={close}
+          aria-label="关闭记录"
+          title="关闭"
+          disabled={saving || phase === 'processing'}
+        >
           <X size={20} />
         </button>
       </div>
@@ -286,7 +306,7 @@ export default function Recorder({ record, date, onClose, onSave }) {
           {asr}
         </p>
       )}
-      {audioUrl && !removeExistingAudio && (
+      {audioUrl && !removeExistingAudio && !active && (
         <div className="audio-review">
           <audio ref={audioRef} controls src={audioUrl} />
           <button
@@ -310,6 +330,7 @@ export default function Recorder({ record, date, onClose, onSave }) {
         <span>可以自己改一改</span>
       </div>
       <textarea
+        ref={draftRef}
         id="journal-text"
         placeholder="刚刚发生了什么？也可以直接写下来。"
         rows={3}
@@ -318,29 +339,44 @@ export default function Recorder({ record, date, onClose, onSave }) {
         disabled={saving}
       />
       {interim && <p className="interim-text">{interim}</p>}
-      <button
-        className="primary-button save-button"
-        disabled={active || saving || (!text.trim() && !audio && !status && !record?.audioId)}
-        onClick={save}
-      >
-        {saving ? (
-          '正在留好…'
-        ) : (
-          <>
-            <Check size={17} />
-            留好这一刻
-          </>
-        )}
-      </button>
-      <p className="record-footer">
-        {date === TODAY ? '明天的你，会读到今天。' : '这一句，留给以后的自己。'}
-      </p>
+      <div className="record-save-area">
+        <button
+          className="primary-button save-button"
+          disabled={active || saving || !canSave}
+          onClick={save}
+        >
+          {saving ? (
+            '正在留好…'
+          ) : (
+            <>
+              <Check size={17} />
+              留好这一刻
+            </>
+          )}
+        </button>
+        <p className="record-footer">
+          {date === TODAY ? '明天的你，会读到今天。' : '这一句，留给以后的自己。'}
+        </p>
+      </div>
       {discard && (
-        <div className="discard-confirm" role="alertdialog" aria-label="保留这条记录吗">
+        <div
+          className="discard-confirm"
+          ref={discardRef}
+          role="alertdialog"
+          aria-modal="true"
+          aria-label="保留这条记录吗"
+        >
           <h3>这一句，还没留好。</h3>
           <p>离开会放弃这次修改。</p>
           <div>
-            <button className="secondary-button" onClick={() => setDiscard(false)}>
+            <button
+              className="secondary-button"
+              data-cancel-discard
+              onClick={() => {
+                setDiscard(false);
+                draftRef.current?.focus({ preventScroll: true });
+              }}
+            >
               继续记录
             </button>
             <button className="danger-button" onClick={onClose}>

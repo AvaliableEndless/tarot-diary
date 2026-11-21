@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useRef } from 'react';
 import {
   ArrowUpRight,
   Check,
@@ -16,20 +16,22 @@ import { deleteAudio } from '../services/audio-store.js';
 import { hasReflection } from '../domain/diary.js';
 import { useDiary } from '../hooks/useDiary.js';
 import { useLocalDay } from '../hooks/useLocalDay.js';
+import { useViewportMetrics } from '../hooks/useViewportMetrics.js';
 import Modal from '../components/Modal.jsx';
 import RecordListItem from '../components/RecordListItem.jsx';
 import YesterdaySection from '../components/YesterdaySection.jsx';
 import TodayPage from '../pages/TodayPage.jsx';
 import HistoryPage from '../pages/HistoryPage.jsx';
 import DeckPage from '../pages/DeckPage.jsx';
-import Recorder from '../features/diary/Recorder.jsx';
-import EntryDetail from '../features/diary/EntryDetail.jsx';
-import Settings from '../features/diary/Settings.jsx';
-import CardDetail from '../features/cards/CardDetail.jsx';
+const Recorder = lazy(() => import('../features/diary/Recorder.jsx'));
+const EntryDetail = lazy(() => import('../features/diary/EntryDetail.jsx'));
+const Settings = lazy(() => import('../features/diary/Settings.jsx'));
+const CardDetail = lazy(() => import('../features/cards/CardDetail.jsx'));
 const query = new URLSearchParams(location.search);
 const PREVIEW = query.get('preview');
 
 export default function App() {
+  useViewportMetrics();
   const TODAY = useLocalDay();
   const {
     records,
@@ -45,7 +47,7 @@ export default function App() {
   const [toast, setToast] = useState('');
   const [drawing, setDrawing] = useState(false);
   const [meaningOpen, setMeaningOpen] = useState(false);
-  const [skipped, setSkipped] = useState(false);
+  const [skippedDay, setSkippedDay] = useState(null);
   const [month, setMonth] = useState(new Date(`${TODAY.slice(0, 7)}-01T12:00:00`));
   const [selectedDay, setSelectedDay] = useState(null);
   const [search, setSearch] = useState('');
@@ -117,15 +119,15 @@ export default function App() {
   const renderYesterday = () => (
     <YesterdaySection
       yesterday={yesterday}
-      skipped={skipped}
+      skipped={skippedDay === TODAY}
       onOpen={openRecord}
-      onSkip={() => setSkipped(true)}
+      onSkip={() => setSkippedDay(TODAY)}
     />
   );
 
   return (
     <>
-      <div className={`app-shell ${PREVIEW ? 'preview-shell' : ''}`}>
+      <div className={`app-shell ${PREVIEW ? 'preview-shell' : ''}`} inert={modal ? '' : undefined}>
         <header className="app-header">
           <button className="wordmark" onClick={() => navigate('today')} aria-label="拾念首页">
             <span className="brand-mark">
@@ -141,27 +143,38 @@ export default function App() {
               ['history', '回看', RotateCcw],
               ['deck', '牌库', Grid2X2],
             ].map(([id, name, Icon]) => (
-              <button key={id} className={tab === id ? 'active' : ''} onClick={() => navigate(id)}>
+              <button
+                key={id}
+                className={tab === id ? 'active' : ''}
+                aria-current={tab === id ? 'page' : undefined}
+                onClick={() => navigate(id)}
+              >
                 <Icon size={16} />
                 {name}
               </button>
             ))}
           </nav>
-          <button
-            className="icon-button settings-button"
-            aria-label="设置与数据"
-            title="设置与数据"
-            onClick={() => setModal({ type: 'settings' })}
-          >
-            <Settings2 size={20} />
-          </button>
+          <div className="header-actions">
+            <button className="primary-button desktop-capture" onClick={() => openRecord()}>
+              <Mic size={17} />
+              留一句
+            </button>
+            <button
+              className="icon-button settings-button"
+              aria-label="设置与数据"
+              title="设置与数据"
+              onClick={() => setModal({ type: 'settings' })}
+            >
+              <Settings2 size={20} />
+            </button>
+          </div>
         </header>
         {storageError && (
           <p className="storage-warning" role="alert">
             记录暂时无法读取或保存。已有数据未被覆盖，请检查浏览器存储后重试。
           </p>
         )}
-        <div className={`workspace ${tab === 'deck' ? 'deck-workspace' : ''}`}>
+        <div className={`workspace ${tab}-workspace`}>
           <main className={`main-content ${tab}`}>
             {tab === 'today' && (
               <TodayPage
@@ -200,7 +213,7 @@ export default function App() {
               />
             )}
           </main>
-          {tab !== 'deck' && (
+          {tab === 'today' && (
             <aside className="side-content">
               <div className="side-date">
                 <Sun size={19} strokeWidth={1.3} />
@@ -273,7 +286,11 @@ export default function App() {
           )}
         </div>
         <nav className="bottom-nav" aria-label="底部导航">
-          <button className={tab === 'today' ? 'active' : ''} onClick={() => navigate('today')}>
+          <button
+            className={tab === 'today' ? 'active' : ''}
+            aria-current={tab === 'today' ? 'page' : undefined}
+            onClick={() => navigate('today')}
+          >
             <Sun size={22} strokeWidth={1.6} />
             <span>今天</span>
           </button>
@@ -287,7 +304,11 @@ export default function App() {
             </span>
             <small>留一句</small>
           </button>
-          <button className={tab === 'history' ? 'active' : ''} onClick={() => navigate('history')}>
+          <button
+            className={tab === 'history' ? 'active' : ''}
+            aria-current={tab === 'history' ? 'page' : undefined}
+            onClick={() => navigate('history')}
+          >
             <RotateCcw size={22} strokeWidth={1.6} />
             <span>回看</span>
           </button>
@@ -301,37 +322,45 @@ export default function App() {
       )}
       {modal && (
         <Modal onClose={() => setModal(null)}>
-          {modal.type === 'record' ? (
-            <Recorder
-              record={records.find((record) => record.date === modal.date)}
-              date={modal.date}
-              onClose={() => setModal(null)}
-              onSave={async (patch) => {
-                updateRecord(modal.date, patch);
-                setModal(null);
-                notify('这一刻，留好了');
-              }}
-            />
-          ) : modal.type === 'card' ? (
-            <CardDetail card={getCard(modal.cardId)} onClose={() => setModal(null)} />
-          ) : modal.type === 'detail' ? (
-            <EntryDetail
-              record={records.find((record) => record.date === modal.date)}
-              onClose={() => setModal(null)}
-              onEdit={() => openRecord(modal.date)}
-              onDelete={removeRecord}
-            />
-          ) : (
-            <Settings
-              records={records}
-              onClose={() => setModal(null)}
-              notify={notify}
-              onClearDemo={() => {
-                clearDemo();
-                notify('示例记录已清除');
-              }}
-            />
-          )}
+          <Suspense
+            fallback={
+              <div className="dialog-loading" role="status">
+                正在打开…
+              </div>
+            }
+          >
+            {modal.type === 'record' ? (
+              <Recorder
+                record={records.find((record) => record.date === modal.date)}
+                date={modal.date}
+                onClose={() => setModal(null)}
+                onSave={async (patch) => {
+                  updateRecord(modal.date, patch);
+                  setModal(null);
+                  notify('这一刻，留好了');
+                }}
+              />
+            ) : modal.type === 'card' ? (
+              <CardDetail card={getCard(modal.cardId)} onClose={() => setModal(null)} />
+            ) : modal.type === 'detail' ? (
+              <EntryDetail
+                record={records.find((record) => record.date === modal.date)}
+                onClose={() => setModal(null)}
+                onEdit={() => openRecord(modal.date)}
+                onDelete={removeRecord}
+              />
+            ) : (
+              <Settings
+                records={records}
+                onClose={() => setModal(null)}
+                notify={notify}
+                onClearDemo={() => {
+                  clearDemo();
+                  notify('示例记录已清除');
+                }}
+              />
+            )}
+          </Suspense>
         </Modal>
       )}
     </>
