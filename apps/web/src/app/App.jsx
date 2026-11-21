@@ -23,6 +23,7 @@ import YesterdaySection from '../components/YesterdaySection.jsx';
 import TodayPage from '../pages/TodayPage.jsx';
 import HistoryPage from '../pages/HistoryPage.jsx';
 import DeckPage from '../pages/DeckPage.jsx';
+import DrawTransition from '../features/cards/DrawTransition.jsx';
 const Recorder = lazy(() => import('../features/diary/Recorder.jsx'));
 const EntryDetail = lazy(() => import('../features/diary/EntryDetail.jsx'));
 const Settings = lazy(() => import('../features/diary/Settings.jsx'));
@@ -45,7 +46,7 @@ export default function App() {
     PREVIEW === 'record' ? { type: 'record', date: dayAgo(1) } : null,
   );
   const [toast, setToast] = useState('');
-  const [drawing, setDrawing] = useState(false);
+  const [drawSession, setDrawSession] = useState(null);
   const [meaningOpen, setMeaningOpen] = useState(false);
   const [skippedDay, setSkippedDay] = useState(null);
   const [month, setMonth] = useState(new Date(`${TODAY.slice(0, 7)}-01T12:00:00`));
@@ -53,15 +54,17 @@ export default function App() {
   const [search, setSearch] = useState('');
   const [family, setFamily] = useState('all');
   const toastTimer = useRef();
-  const drawTimer = useRef();
+  const drawLock = useRef(false);
+  const drawTarget = useRef();
   const today = records.find((record) => record.date === TODAY);
   const yesterday = records.find((record) => record.date === dayAgo(1));
   const card = today?.cardId ? getCard(today.cardId) : null;
+  const drawing = Boolean(drawSession);
+  const visibleCard = drawing && drawSession.phase !== 'landing' ? null : card;
   const completed = records.filter(hasReflection);
   useEffect(
     () => () => {
       clearTimeout(toastTimer.current);
-      clearTimeout(drawTimer.current);
     },
     [],
   );
@@ -71,29 +74,53 @@ export default function App() {
     toastTimer.current = setTimeout(() => setToast(''), 3200);
   };
   const navigate = (target) => {
+    finishDraw();
     setTab(target);
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
-  const draw = () => {
-    if (card || drawing) return;
-    setDrawing(true);
-    drawTimer.current = setTimeout(
-      () => {
-        const random = new Uint32Array(1);
-        crypto.getRandomValues(random);
-        try {
-          updateRecord(TODAY, { cardId: cards[random[0] % cards.length].id, demo: false });
-          if (navigator.vibrate) navigator.vibrate(30);
-        } catch {
-          notify('今天的牌没有保存成功，请检查浏览器存储后重试');
-        }
-        setDrawing(false);
-        setMeaningOpen(false);
-      },
-      matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650,
-    );
+  const finishDraw = () => {
+    drawLock.current = false;
+    setDrawSession(null);
   };
-  const openRecord = (date = TODAY) => setModal({ type: 'record', date });
+  useEffect(() => {
+    if (drawSession && (drawSession.date !== TODAY || modal || tab !== 'today')) finishDraw();
+  }, [TODAY, modal, tab, drawSession?.date]);
+  const draw = (origin) => {
+    if (card || drawLock.current) return;
+    drawLock.current = true;
+    try {
+      const random = new Uint32Array(1);
+      crypto.getRandomValues(random);
+      const saved = updateRecord(TODAY, {
+        cardId: cards[random[0] % cards.length].id,
+        demo: false,
+      });
+      const chosen = getCard(saved.find((record) => record.date === TODAY).cardId);
+      setMeaningOpen(false);
+      if (navigator.vibrate) navigator.vibrate(20);
+      if (
+        !origin?.width ||
+        matchMedia('(prefers-reduced-motion: reduce)').matches ||
+        !Element.prototype.animate
+      ) {
+        finishDraw();
+        return;
+      }
+      setDrawSession({
+        date: TODAY,
+        card: chosen,
+        phase: 'loading',
+        origin: { left: origin.left, top: origin.top, width: origin.width, height: origin.height },
+      });
+    } catch {
+      finishDraw();
+      notify('今天的牌没有保存成功，请检查浏览器存储后重试');
+    }
+  };
+  const openRecord = (date = TODAY) => {
+    finishDraw();
+    setModal({ type: 'record', date });
+  };
   const removeRecord = async (record) => {
     try {
       deleteRecord(record.id);
@@ -178,9 +205,12 @@ export default function App() {
           <main className={`main-content ${tab}`}>
             {tab === 'today' && (
               <TodayPage
-                card={card}
+                card={visibleCard}
                 today={today}
                 drawing={drawing}
+                drawPhase={drawSession?.phase}
+                drawTarget={drawTarget}
+                skipDraw={finishDraw}
                 draw={draw}
                 setModal={setModal}
                 openRecord={openRecord}
@@ -319,6 +349,15 @@ export default function App() {
           <Check size={17} />
           {toast}
         </div>
+      )}
+      {drawSession && (
+        <DrawTransition
+          session={drawSession}
+          targetRef={drawTarget}
+          onPhase={(phase) => setDrawSession((current) => (current ? { ...current, phase } : null))}
+          onDone={finishDraw}
+          onImageError={() => notify('牌已保存，牌图暂未加载。可以稍后再看。')}
+        />
       )}
       {modal && (
         <Modal onClose={() => setModal(null)}>

@@ -1,22 +1,26 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   ArrowRight,
   CheckCheck,
+  ChevronsRight,
   ChevronRight,
   Feather,
   Grid2X2,
   Mic,
-  Moon,
   Pencil,
   Plus,
   Sparkles,
 } from 'lucide-react';
 import { getCard } from '../domain/cards.js';
+import CardBack from '../features/cards/CardBack.jsx';
 
 export default function TodayPage({
   card,
   today,
   drawing,
+  drawPhase,
+  drawTarget,
+  skipDraw,
   draw,
   setModal,
   openRecord,
@@ -25,6 +29,14 @@ export default function TodayPage({
   renderYesterday,
   navigate,
 }) {
+  const deckFace = useRef();
+  const startDraw = () => draw(deckFace.current?.getBoundingClientRect());
+  const drawLabel = {
+    loading: '正在准备今天的牌…',
+    shuffle: '轻轻洗牌…',
+    reveal: '正在翻开…',
+    landing: '今天的牌，留好了',
+  }[drawPhase];
   return (
     <>
       <div className="page-heading">
@@ -50,12 +62,19 @@ export default function TodayPage({
           <Grid2X2 size={19} />
         </button>
       </div>
-      <section className={`daily-stage ${card ? 'is-drawn' : ''}`} aria-label="今日抽牌">
-        <div className={`card-area ${drawing ? 'drawing' : ''}`}>
+      <section
+        className={`daily-stage ${card ? 'is-drawn' : ''} ${drawPhase === 'landing' ? 'draw-landing' : ''}`}
+        aria-label="今日抽牌"
+        aria-busy={drawing}
+      >
+        <p className="sr-only" role="status" aria-live="polite">
+          {card ? `今天的牌：${card.name}。${card.prompt}` : drawing ? drawLabel : ''}
+        </p>
+        <div className={`card-area ${drawing ? `drawing draw-${drawPhase}` : ''}`}>
           {!card ? (
             <button
               className="deck-stack"
-              onClick={draw}
+              onClick={startDraw}
               disabled={drawing}
               aria-label="翻开今天的牌"
             >
@@ -74,21 +93,12 @@ export default function TodayPage({
                 width="360"
                 height="600"
               />
-              <span className="card-back">
-                <span className="card-back-border">
-                  <span className="deck-top">A MOMENT FOR YOU</span>
-                  <span className="deck-symbol">
-                    <Moon size={52} strokeWidth={0.8} />
-                    <Sparkles size={20} strokeWidth={1} />
-                  </span>
-                  <span className="deck-name">拾 念</span>
-                  <span className="deck-bottom">ONE DAY · ONE CARD</span>
-                </span>
-              </span>
+              <CardBack ref={deckFace} />
             </button>
           ) : (
             <button
               className="revealed-card"
+              ref={drawTarget}
               onClick={() => setModal({ type: 'card', cardId: card.id })}
               aria-label={`查看${card.name}牌意`}
             >
@@ -109,6 +119,17 @@ export default function TodayPage({
               ? `${String(card.number).padStart(2, '0')} / ${card.english.toUpperCase()}`
               : '78 种相遇 · 今天只留一张'}
           </span>
+          {drawing && drawPhase !== 'landing' && (
+            <button
+              className="text-button skip-draw"
+              onClick={skipDraw}
+              aria-label="跳过抽卡动画"
+              title="跳过抽卡动画"
+            >
+              <ChevronsRight size={17} />
+              跳过
+            </button>
+          )}
         </div>
         {card ? (
           <div className="card-reading">
@@ -143,11 +164,11 @@ export default function TodayPage({
           </div>
         ) : (
           <div className="draw-action">
-            <button className="primary-button draw-button" onClick={draw} disabled={drawing}>
+            <button className="primary-button draw-button" onClick={startDraw} disabled={drawing}>
               {drawing ? (
                 <>
                   <Sparkles size={17} />
-                  正在遇见今天…
+                  {drawLabel}
                 </>
               ) : (
                 <>

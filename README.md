@@ -20,6 +20,8 @@ npm run check
 
 工程版使用 React 18 + Vite 6、JavaScript / JSX 和 CSS；桌面与手机共用响应式页面。当前没有后端数据库：LocalStorage 保存文字与抽牌，IndexedDB 保存录音，各设备独立保存，尚不支持账号与跨设备同步。
 
+每日抽牌新增洗牌、抽离、翻面与落位动画，可跳过并适配减少动态效果：[查看动效预览与设计](docs/draw-motion.md)。
+
 ![拾念界面设计](docs/ui-board.png)
 
 工程结构与扩展边界见 [架构说明](docs/architecture.md)，操作与验证方式见 [工程版说明](apps/web/README.md)。原有根目录单文件版、三张/即时抽卡、牌面和截图继续保留，运行方法如下。
