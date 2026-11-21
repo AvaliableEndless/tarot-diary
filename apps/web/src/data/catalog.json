@@ -1,0 +1,470 @@
+[
+  {
+    "id": 1,
+    "name": "愚人",
+    "english": "The Fool",
+    "image": "/cards/01.webp"
+  },
+  {
+    "id": 2,
+    "name": "魔术师",
+    "english": "The Magician",
+    "image": "/cards/02.webp"
+  },
+  {
+    "id": 3,
+    "name": "女祭司",
+    "english": "The High Priestess",
+    "image": "/cards/03.webp"
+  },
+  {
+    "id": 4,
+    "name": "皇后",
+    "english": "The Empress",
+    "image": "/cards/04.webp"
+  },
+  {
+    "id": 5,
+    "name": "皇帝",
+    "english": "The Emperor",
+    "image": "/cards/05.webp"
+  },
+  {
+    "id": 6,
+    "name": "教皇",
+    "english": "The Hierophant",
+    "image": "/cards/06.webp"
+  },
+  {
+    "id": 7,
+    "name": "恋人",
+    "english": "The Lovers",
+    "image": "/cards/07.webp"
+  },
+  {
+    "id": 8,
+    "name": "战车",
+    "english": "The Chariot",
+    "image": "/cards/08.webp"
+  },
+  {
+    "id": 9,
+    "name": "力量",
+    "english": "Strength",
+    "image": "/cards/09.webp"
+  },
+  {
+    "id": 10,
+    "name": "隐者",
+    "english": "The Hermit",
+    "image": "/cards/10.webp"
+  },
+  {
+    "id": 11,
+    "name": "命运之轮",
+    "english": "Wheel of Fortune",
+    "image": "/cards/11.webp"
+  },
+  {
+    "id": 12,
+    "name": "正义",
+    "english": "Justice",
+    "image": "/cards/12.webp"
+  },
+  {
+    "id": 13,
+    "name": "倒吊人",
+    "english": "The Hanged Man",
+    "image": "/cards/13.webp"
+  },
+  {
+    "id": 14,
+    "name": "死神",
+    "english": "Death",
+    "image": "/cards/14.webp"
+  },
+  {
+    "id": 15,
+    "name": "节制",
+    "english": "Temperance",
+    "image": "/cards/15.webp"
+  },
+  {
+    "id": 16,
+    "name": "恶魔",
+    "english": "The Devil",
+    "image": "/cards/16.webp"
+  },
+  {
+    "id": 17,
+    "name": "高塔",
+    "english": "The Tower",
+    "image": "/cards/17.webp"
+  },
+  {
+    "id": 18,
+    "name": "星星",
+    "english": "The Star",
+    "image": "/cards/18.webp"
+  },
+  {
+    "id": 19,
+    "name": "月亮",
+    "english": "The Moon",
+    "image": "/cards/19.webp"
+  },
+  {
+    "id": 20,
+    "name": "太阳",
+    "english": "The Sun",
+    "image": "/cards/20.webp"
+  },
+  {
+    "id": 21,
+    "name": "审判",
+    "english": "Judgment",
+    "image": "/cards/21.webp"
+  },
+  {
+    "id": 22,
+    "name": "世界",
+    "english": "The World",
+    "image": "/cards/22.webp"
+  },
+  {
+    "id": 23,
+    "name": "权杖首牌",
+    "english": "Ace of Wands",
+    "image": "/cards/23.webp"
+  },
+  {
+    "id": 24,
+    "name": "权杖二",
+    "english": "Two of Wands",
+    "image": "/cards/24.webp"
+  },
+  {
+    "id": 25,
+    "name": "权杖三",
+    "english": "Three of Wands",
+    "image": "/cards/25.webp"
+  },
+  {
+    "id": 26,
+    "name": "权杖四",
+    "english": "Four of Wands",
+    "image": "/cards/26.webp"
+  },
+  {
+    "id": 27,
+    "name": "权杖五",
+    "english": "Five of Wands",
+    "image": "/cards/27.webp"
+  },
+  {
+    "id": 28,
+    "name": "权杖六",
+    "english": "Six of Wands",
+    "image": "/cards/28.webp"
+  },
+  {
+    "id": 29,
+    "name": "权杖七",
+    "english": "Seven of Wands",
+    "image": "/cards/29.webp"
+  },
+  {
+    "id": 30,
+    "name": "权杖八",
+    "english": "Eight of Wands",
+    "image": "/cards/30.webp"
+  },
+  {
+    "id": 31,
+    "name": "权杖九",
+    "english": "Nine of Wands",
+    "image": "/cards/31.webp"
+  },
+  {
+    "id": 32,
+    "name": "权杖十",
+    "english": "Ten of Wands",
+    "image": "/cards/32.webp"
+  },
+  {
+    "id": 33,
+    "name": "权杖侍从",
+    "english": "Page of Wands",
+    "image": "/cards/33.webp"
+  },
+  {
+    "id": 34,
+    "name": "权杖骑士",
+    "english": "Knight of Wands",
+    "image": "/cards/34.webp"
+  },
+  {
+    "id": 35,
+    "name": "权杖皇后",
+    "english": "Queen of Wands",
+    "image": "/cards/35.webp"
+  },
+  {
+    "id": 36,
+    "name": "权杖国王",
+    "english": "King of Wands",
+    "image": "/cards/36.webp"
+  },
+  {
+    "id": 37,
+    "name": "圣杯首牌",
+    "english": "Ace of Cups",
+    "image": "/cards/37.webp"
+  },
+  {
+    "id": 38,
+    "name": "圣杯二",
+    "english": "Two of Cups",
+    "image": "/cards/38.webp"
+  },
+  {
+    "id": 39,
+    "name": "圣杯三",
+    "english": "Three of Cups",
+    "image": "/cards/39.webp"
+  },
+  {
+    "id": 40,
+    "name": "圣杯四",
+    "english": "Four of Cups",
+    "image": "/cards/40.webp"
+  },
+  {
+    "id": 41,
+    "name": "圣杯五",
+    "english": "Five of Cups",
+    "image": "/cards/41.webp"
+  },
+  {
+    "id": 42,
+    "name": "圣杯六",
+    "english": "Six of Cups",
+    "image": "/cards/42.webp"
+  },
+  {
+    "id": 43,
+    "name": "圣杯七",
+    "english": "Seven of Cups",
+    "image": "/cards/43.webp"
+  },
+  {
+    "id": 44,
+    "name": "圣杯八",
+    "english": "Eight of Cups",
+    "image": "/cards/44.webp"
+  },
+  {
+    "id": 45,
+    "name": "圣杯九",
+    "english": "Nine of Cups",
+    "image": "/cards/45.webp"
+  },
+  {
+    "id": 46,
+    "name": "圣杯十",
+    "english": "Ten of Cups",
+    "image": "/cards/46.webp"
+  },
+  {
+    "id": 47,
+    "name": "圣杯侍从",
+    "english": "Page of Cups",
+    "image": "/cards/47.webp"
+  },
+  {
+    "id": 48,
+    "name": "圣杯骑士",
+    "english": "Knight of Cups",
+    "image": "/cards/48.webp"
+  },
+  {
+    "id": 49,
+    "name": "圣杯皇后",
+    "english": "Queen of Cups",
+    "image": "/cards/49.webp"
+  },
+  {
+    "id": 50,
+    "name": "圣杯国王",
+    "english": "King of Cups",
+    "image": "/cards/50.webp"
+  },
+  {
+    "id": 51,
+    "name": "宝剑首牌",
+    "english": "Ace of Swords",
+    "image": "/cards/51.webp"
+  },
+  {
+    "id": 52,
+    "name": "宝剑二",
+    "english": "Two of Swords",
+    "image": "/cards/52.webp"
+  },
+  {
+    "id": 53,
+    "name": "宝剑三",
+    "english": "Three of Swords",
+    "image": "/cards/53.webp"
+  },
+  {
+    "id": 54,
+    "name": "宝剑四",
+    "english": "Four of Swords",
+    "image": "/cards/54.webp"
+  },
+  {
+    "id": 55,
+    "name": "宝剑五",
+    "english": "Five of Swords",
+    "image": "/cards/55.webp"
+  },
+  {
+    "id": 56,
+    "name": "宝剑六",
+    "english": "Six of Swords",
+    "image": "/cards/56.webp"
+  },
+  {
+    "id": 57,
+    "name": "宝剑七",
+    "english": "Seven of Swords",
+    "image": "/cards/57.webp"
+  },
+  {
+    "id": 58,
+    "name": "宝剑八",
+    "english": "Eight of Swords",
+    "image": "/cards/58.webp"
+  },
+  {
+    "id": 59,
+    "name": "宝剑九",
+    "english": "Nine of Swords",
+    "image": "/cards/59.webp"
+  },
+  {
+    "id": 60,
+    "name": "宝剑十",
+    "english": "Ten of Swords",
+    "image": "/cards/60.webp"
+  },
+  {
+    "id": 61,
+    "name": "宝剑侍从",
+    "english": "Page of Swords",
+    "image": "/cards/61.webp"
+  },
+  {
+    "id": 62,
+    "name": "宝剑骑士",
+    "english": "Knight of Swords",
+    "image": "/cards/62.webp"
+  },
+  {
+    "id": 63,
+    "name": "宝剑皇后",
+    "english": "Queen of Swords",
+    "image": "/cards/63.webp"
+  },
+  {
+    "id": 64,
+    "name": "宝剑国王",
+    "english": "King of Swords",
+    "image": "/cards/64.webp"
+  },
+  {
+    "id": 65,
+    "name": "星币首牌",
+    "english": "Ace of Pentacles",
+    "image": "/cards/65.webp"
+  },
+  {
+    "id": 66,
+    "name": "星币二",
+    "english": "Two of Pentacles",
+    "image": "/cards/66.webp"
+  },
+  {
+    "id": 67,
+    "name": "星币三",
+    "english": "Three of Pentacles",
+    "image": "/cards/67.webp"
+  },
+  {
+    "id": 68,
+    "name": "星币四",
+    "english": "Four of Pentacles",
+    "image": "/cards/68.webp"
+  },
+  {
+    "id": 69,
+    "name": "星币五",
+    "english": "Five of Pentacles",
+    "image": "/cards/69.webp"
+  },
+  {
+    "id": 70,
+    "name": "星币六",
+    "english": "Six of Pentacles",
+    "image": "/cards/70.webp"
+  },
+  {
+    "id": 71,
+    "name": "星币七",
+    "english": "Seven of Pentacles",
+    "image": "/cards/71.webp"
+  },
+  {
+    "id": 72,
+    "name": "星币八",
+    "english": "Eight of Pentacles",
+    "image": "/cards/72.webp"
+  },
+  {
+    "id": 73,
+    "name": "星币九",
+    "english": "Nine of Pentacles",
+    "image": "/cards/73.webp"
+  },
+  {
+    "id": 74,
+    "name": "星币十",
+    "english": "Ten of Pentacles",
+    "image": "/cards/74.webp"
+  },
+  {
+    "id": 75,
+    "name": "星币侍从",
+    "english": "Page of Pentacles",
+    "image": "/cards/75.webp"
+  },
+  {
+    "id": 76,
+    "name": "星币骑士",
+    "english": "Knight of Pentacles",
+    "image": "/cards/76.webp"
+  },
+  {
+    "id": 77,
+    "name": "星币皇后",
+    "english": "Queen of Pentacles",
+    "image": "/cards/77.webp"
+  },
+  {
+    "id": 78,
+    "name": "星币国王",
+    "english": "King of Pentacles",
+    "image": "/cards/78.webp"
+  }
+]

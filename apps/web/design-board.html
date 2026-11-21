@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>拾念 · 比赛版界面设计</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eef1e9;color:#284638;font-family:Inter,"Microsoft YaHei",sans-serif;letter-spacing:0}header{max-width:1792px;margin:auto;padding:47px 40px 31px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px}h1{font-family:"Noto Serif SC",SimSun,serif;font-size:34px;font-weight:500;margin:0 0 12px}header p{font-size:12px;margin:0;color:#7b8972;line-height:1.8}header>span{font-size:10px;color:#8b9980;white-space:nowrap;padding-bottom:4px}.screens{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:27px;max-width:1792px;margin:0 auto;padding:0 40px 44px}.screen-label{margin:0 0 12px;display:flex;align-items:center;gap:9px;font-size:12px;font-weight:400}.screen-label small{font-size:9px;color:#8d9a82}.frame{width:100%;aspect-ratio:390/844;position:relative;overflow:hidden;border:1px solid #dce4d4;border-radius:8px;background:#f7f8f5;box-shadow:0 10px 25px #2a413210}iframe{border:0;position:absolute;inset:0;width:390px;height:844px;transform-origin:top left}footer{max-width:1792px;padding:0 40px 35px;margin:auto;font-size:10px;color:#8d9a82;display:flex;justify-content:space-between;gap:15px;line-height:1.8}@media(max-width:1100px){.screens{grid-template-columns:repeat(2,minmax(0,1fr));max-width:900px;gap:30px}header{max-width:900px}header>span{display:none}}@media(max-width:540px){.screens{grid-template-columns:1fr;max-width:450px;padding:0 25px 30px}header{display:block;padding:32px 25px}h1{font-size:28px}footer{display:block;padding:0 25px 30px}footer span{display:block;margin-bottom:7px}}
+</style>
+</head>
+<body>
+<header><div><h1>拾念</h1><p>一天一张牌，一天一句话。<br />今天带着问题生活，明天留下一句回声。</p></div><span>COMPETITION EDITION / 2026 · 11</span></header>
+<main class="screens">
+<section><h2 class="screen-label">01 · 今天 <small>翻开一个小小的期待</small></h2><div class="frame"><iframe title="抽牌首页" src="/?preview=home"></iframe></div></section>
+<section><h2 class="screen-label">02 · 相遇 <small>保留今天的牌和问题</small></h2><div class="frame"><iframe title="今日牌面" src="/?preview=drawn"></iframe></div></section>
+<section><h2 class="screen-label">03 · 一句话 <small>点选或语音，留下真实经历</small></h2><div class="frame"><iframe title="语音复盘" src="/?preview=record"></iframe></div></section>
+<section><h2 class="screen-label">04 · 回看 <small>当时的牌，后来的生活</small></h2><div class="frame"><iframe title="日历和历史" src="/?preview=history"></iframe></div></section>
+</main>
+<footer><span>原始牌面 × 松针绿 × 朱砂红 / 所有主操作位于拇指可达区域</span><span>78 张真实牌图 · 页面内可直接操作 · 历史文字为示例记录</span></footer>
+<script>function resize(){document.querySelectorAll('.frame').forEach(frame=>{frame.querySelector('iframe').style.transform=`scale(${frame.clientWidth/390})`})}addEventListener('resize',resize);resize();</script>
+</body>
+</html>

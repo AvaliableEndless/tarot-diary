@@ -1,0 +1,32 @@
+{
+  "name": "tarot-diary",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace @tarot-diary/web",
+    "build": "npm run build --workspace @tarot-diary/web",
+    "preview": "npm run preview --workspace @tarot-diary/web",
+    "lint": "eslint apps/web/src apps/web/tests scripts",
+    "test": "node --test apps/web/tests/*.test.js",
+    "test:e2e": "playwright test",
+    "check:assets": "node scripts/check-assets.js",
+    "format": "prettier --write apps/web/src apps/web/tests scripts *.js *.json apps/web/*.js apps/web/*.json",
+    "check": "npm run lint && npm test && npm run check:assets && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@playwright/test": "^1.58.2",
+    "eslint": "^9.39.0",
+    "eslint-plugin-react": "^7.37.5",
+    "fake-indexeddb": "^6.2.4",
+    "globals": "^16.5.0",
+    "prettier": "^3.7.1"
+  }
+}
