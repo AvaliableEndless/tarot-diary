@@ -51,7 +51,6 @@ export default function App() {
   );
   const [toast, setToast] = useState('');
   const [drawSession, setDrawSession] = useState(null);
-  const [meaningOpen, setMeaningOpen] = useState(false);
   const [skippedDay, setSkippedDay] = useState(null);
   const [month, setMonth] = useState(new Date(`${TODAY.slice(0, 7)}-01T12:00:00`));
   const [selectedDay, setSelectedDay] = useState(null);
@@ -107,7 +106,6 @@ export default function App() {
         });
         chosen = getCard(saved.find((record) => record.date === TODAY).cardId);
       }
-      setMeaningOpen(false);
       if (navigator.vibrate) navigator.vibrate(20);
       if (!origin?.width) {
         finishDraw();
@@ -265,8 +263,6 @@ export default function App() {
                 draw={draw}
                 setModal={setModal}
                 openRecord={openRecord}
-                meaningOpen={meaningOpen}
-                setMeaningOpen={setMeaningOpen}
                 renderYesterday={renderYesterday}
                 navigate={navigate}
               />

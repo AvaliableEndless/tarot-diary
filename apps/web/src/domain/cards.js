@@ -1,4 +1,8 @@
 import catalog from '../data/catalog.json' with { type: 'json' };
+import symbolism from '../data/symbolism.json' with { type: 'json' };
+
+export const symbolismSource = symbolism.source;
+const symbolismById = new Map(symbolism.cards.map((card) => [card.id, card]));
 
 // These are editorial reflection prompts, not generated predictions.
 const major = [
@@ -243,6 +247,7 @@ const minor = [
 ];
 
 export const cards = catalog.map((card) => {
+  const interpretation = symbolismById.get(card.id);
   const suit = suits.findLast((item) => card.id >= item.start);
   const meaning =
     card.id <= 22
@@ -250,6 +255,9 @@ export const cards = catalog.map((card) => {
       : minor[Math.floor((card.id - 23) / 14)][(card.id - 23) % 14];
   return {
     ...card,
+    symbols: interpretation.symbols,
+    todayHint: interpretation.today,
+    meaningSource: `${symbolism.source.url}/${interpretation.source}`,
     title: meaning?.[0] || suit.title,
     prompt: meaning?.[1] || suit.prompt,
     question: meaning?.[2] || suit.question,

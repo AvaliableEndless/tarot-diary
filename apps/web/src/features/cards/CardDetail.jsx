@@ -1,5 +1,6 @@
 import React from 'react';
-import { X } from 'lucide-react';
+import { ExternalLink, X } from 'lucide-react';
+import { symbolismSource } from '../../domain/cards.js';
 
 export default function CardDetail({ card, onClose }) {
   return (
@@ -11,17 +12,20 @@ export default function CardDetail({ card, onClose }) {
         </button>
       </div>
       <img src={card.image} alt={card.name} />
-      <p className="eyebrow">{card.english.toUpperCase()}</p>
-      <h2>
-        {card.name}
-        <span> · {card.title}</span>
-      </h2>
-      <p className="card-detail-prompt">{card.prompt}</p>
-      <p>{card.detail}</p>
-      <div className="question-band">
-        <span>带着这个问题过今天</span>
-        <strong>{card.question}</strong>
-      </div>
+      <h2>{card.name}</h2>
+      <section className="detail-symbolism">
+        <h3>常见象征</h3>
+        <p>{card.symbols.join(' · ')}</p>
+        <a href={card.meaningSource} target="_blank" rel="noopener noreferrer">
+          {symbolismSource.name} · 正位释义
+          <ExternalLink size={12} />
+        </a>
+      </section>
+      <section className="detail-reflection">
+        <h3>今日联想</h3>
+        <p className="card-detail-prompt">{card.todayHint}</p>
+        <p>{card.detail}</p>
+      </section>
     </div>
   );
 }

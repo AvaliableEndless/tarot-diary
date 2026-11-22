@@ -519,28 +519,29 @@ body {
   .card-reading {
     text-align: left;
     padding: 0;
+    width: 100%;
+    max-width: 420px;
   }
   .card-reading h2 {
     font-size: 26px;
-    margin: 16px 0 14px;
+    max-width: none;
+    margin: 0;
   }
-  .card-reading h2 > span {
-    padding: 0 9px;
+  .card-reading-heading {
+    justify-content: space-between;
+    gap: 12px;
+    max-width: none;
+    margin: 0;
+  }
+  .card-tools {
+    position: static;
+  }
+  .card-symbols {
+    margin: 8px 0 14px;
   }
   .daily-prompt {
     margin: 0;
-    max-width: 330px;
-  }
-  .meaning-toggle {
-    margin: 9px 0 0;
-  }
-  .meaning-detail {
-    margin: 0;
-    padding-top: 4px;
-  }
-  .saved-card-label {
-    justify-content: flex-start;
-    margin: 17px 0 23px;
+    max-width: none;
   }
   .today-record-button {
     max-width: 300px;
@@ -677,11 +678,11 @@ body {
     min-height: 0;
   }
   .is-drawn .card-area {
-    min-height: 235px;
+    min-height: 267px;
   }
   .is-drawn .revealed-card {
-    width: 125px;
-    height: 208px;
+    width: 148px;
+    height: 247px;
   }
   .card-reading {
     text-align: center;
@@ -689,8 +690,7 @@ body {
   }
   .card-reading h2 {
     font-size: 24px;
-    line-height: 1.5;
-    margin: 4px 0 7px;
+    margin: 0;
   }
   .daily-prompt {
     font-size: 15px;
@@ -698,19 +698,11 @@ body {
     max-width: 330px;
     margin: 0 auto;
   }
-  .meaning-toggle {
-    min-height: 42px;
-    font-size: 12px;
-    margin: 0;
-  }
-  .meaning-detail {
-    padding: 5px 0 14px;
-  }
   .today-record-button {
     max-width: 300px;
     min-height: 46px;
     font-size: 13px;
-    margin-top: 4px;
+    margin-top: 18px;
   }
   .mobile-yesterday,
   .is-drawn + .mobile-yesterday {
@@ -987,11 +979,11 @@ body {
     min-height: 268px;
   }
   .is-drawn .card-area {
-    min-height: 223px;
+    min-height: 250px;
   }
   .is-drawn .revealed-card {
-    width: 118px;
-    height: 197px;
+    width: 138px;
+    height: 230px;
   }
   .card-reading h2 {
     font-size: 23px;

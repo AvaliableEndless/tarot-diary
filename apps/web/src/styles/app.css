@@ -450,61 +450,52 @@ button:hover {
 }
 .card-reading {
   text-align: center;
-  padding: 17px 30px 0;
+  padding: 12px 0 0;
 }
-.reading-kicker {
-  font-size: 10px;
-  display: inline-flex;
+.card-reading-heading {
+  position: relative;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  color: #829077;
-}
-.reading-kicker > span {
-  width: 5px;
-  height: 5px;
-  background: #a4ad7e;
-  border-radius: 50%;
+  justify-content: center;
+  min-height: 44px;
+  max-width: 370px;
+  margin: 0 auto;
 }
 .card-reading h2 {
   font-size: 24px;
-  margin: 10px 0 9px;
+  line-height: 1.4;
+  max-width: calc(100% - 176px);
+  margin: 0;
   font-weight: 500;
 }
-.card-reading h2 > span {
-  padding: 0 11px;
-  color: #9aa38f;
+.card-tools {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+}
+.card-tools .icon-button {
+  width: 44px;
+  height: 44px;
+  color: #64725d;
+}
+.card-symbols {
+  color: #4e654c;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 3px 0 11px;
+}
+.card-symbols > span {
+  color: #64725d;
+  font-size: 12px;
+  margin-right: 10px;
 }
 .daily-prompt {
   font-family: 'Noto Serif SC', SimSun, serif;
   font-size: 15px;
-  line-height: 1.9;
+  line-height: 1.8;
   max-width: 370px;
   margin: 0 auto;
-}
-.meaning-toggle {
-  font-size: 10px;
-  margin-top: 3px;
-}
-.turn-down {
-  transform: rotate(90deg);
-}
-.meaning-detail {
-  max-width: 360px;
-  margin: 0 auto;
-  padding: 5px 0 10px;
-  font-size: 12px;
-  line-height: 1.9;
-  color: var(--muted);
-  text-align: left;
-}
-.saved-card-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-size: 10px;
-  color: #85907c;
-  margin: 12px 0 18px;
 }
 .today-record-button {
   background: transparent;
@@ -515,6 +506,7 @@ button:hover {
   max-width: 290px;
   width: 100%;
   padding: 10px 13px;
+  margin-top: 18px;
 }
 .today-record-button > svg:last-child {
   margin-left: auto;
@@ -1140,11 +1132,44 @@ button:hover {
   color: #7e8a72;
   margin: 10px 0;
 }
-.card-detail > p.card-detail-prompt {
-  text-align: center;
+.card-detail-prompt {
   font-family: 'Noto Serif SC', serif;
   font-size: 15px;
   color: var(--ink);
+}
+.detail-symbolism,
+.detail-reflection {
+  padding: 17px 0;
+  border-top: 1px solid var(--line);
+}
+.detail-symbolism h3,
+.detail-reflection h3 {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  color: #64725d;
+  margin: 0 0 8px;
+}
+.detail-symbolism p {
+  font-size: 16px;
+  line-height: 1.7;
+}
+.detail-symbolism a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  font-size: 12px;
+  color: #64725d;
+  text-underline-offset: 3px;
+}
+.detail-reflection p {
+  font-size: 14px;
+  line-height: 1.9;
+}
+.detail-reflection p + p {
+  color: #64725d;
+  margin-top: 10px;
 }
 .question-band {
   margin-top: 23px;
@@ -2176,22 +2201,6 @@ button:hover {
   }
   .card-reading {
     padding-top: 5px;
-  }
-  .card-reading .reading-kicker {
-    display: none;
-  }
-  .card-reading h2 {
-    margin: 5px 0 7px;
-  }
-  .saved-card-label {
-    display: none;
-  }
-  .meaning-toggle {
-    margin-top: 0;
-    min-height: 29px;
-  }
-  .today-record-button {
-    margin-top: 8px;
   }
   .is-drawn + .mobile-yesterday {
     padding-top: 13px;

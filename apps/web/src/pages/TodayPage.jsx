@@ -1,11 +1,10 @@
 import React, { useRef } from 'react';
 import {
   ArrowRight,
-  CheckCheck,
   ChevronsRight,
-  ChevronRight,
   Feather,
   Grid2X2,
+  Info,
   Mic,
   Pencil,
   Plus,
@@ -29,8 +28,6 @@ export default function TodayPage({
   draw,
   setModal,
   openRecord,
-  meaningOpen,
-  setMeaningOpen,
   renderYesterday,
   navigate,
 }) {
@@ -55,9 +52,7 @@ export default function TodayPage({
           一日一牌
         </p>
         <h1>{card ? '这一张，属于今天。' : '今天，会有什么发生？'}</h1>
-        <p className="heading-sub">
-          {card ? '把答案留给生活。' : '给平常的一天，一个小小的期待。'}
-        </p>
+        {!card && <p className="heading-sub">给平常的一天，一个小小的期待。</p>}
         <button
           className="icon-button mobile-deck"
           onClick={() => navigate('deck')}
@@ -73,7 +68,11 @@ export default function TodayPage({
         aria-busy={drawing}
       >
         <p className="sr-only" role="status" aria-live="polite">
-          {card ? `今天的牌：${card.name}。${card.prompt}` : drawing ? drawLabel : ''}
+          {card
+            ? `今天的牌：${card.name}。${card.symbols.join('、')}。${card.todayHint}`
+            : drawing
+              ? drawLabel
+              : ''}
         </p>
         <div className={`card-area ${drawing ? `drawing draw-${drawPhase}` : ''}`}>
           {!card ? (
@@ -119,11 +118,7 @@ export default function TodayPage({
               </span>
             </button>
           )}
-          <span className="card-caption">
-            {card
-              ? `${String(card.number).padStart(2, '0')} / ${card.english.toUpperCase()}`
-              : '78 种相遇 · 今天只留一张'}
-          </span>
+          {!card && <span className="card-caption">78 种相遇 · 今天只留一张</span>}
           {drawing && drawPhase !== 'landing' && (
             <button
               className="text-button skip-draw"
@@ -138,48 +133,40 @@ export default function TodayPage({
         </div>
         {card ? (
           <div className="card-reading">
-            <span className="reading-kicker">
-              <span />
-              今日的提醒
-            </span>
-            <h2>
-              {card.name}
-              <span>·</span>
-              {card.title}
-            </h2>
-            <p className="daily-prompt">{card.prompt}</p>
-            <div className="reading-actions">
-              <button
-                className="text-button meaning-toggle"
-                onClick={() => setMeaningOpen(!meaningOpen)}
-                aria-expanded={meaningOpen}
-              >
-                {meaningOpen ? '收起牌意' : '读一读这张牌'}
-                <ChevronRight size={14} className={meaningOpen ? 'turn-down' : ''} />
-              </button>
-              <button
-                className="text-button replay-draw"
-                aria-label="重播抽牌"
-                title="播放完整抽牌动画，不会重抽"
-                disabled={drawing}
-                onClick={() => draw(drawTarget.current?.getBoundingClientRect(), true)}
-              >
-                <RotateCcw size={14} />
-                重播抽牌
-              </button>
+            <div className="card-reading-heading">
+              <h2>{card.name}</h2>
+              <div className="card-tools">
+                <button
+                  className="icon-button"
+                  aria-label={`查看${card.name}牌义与来源`}
+                  title="牌义与来源"
+                  onClick={() => setModal({ type: 'card', cardId: card.id })}
+                >
+                  <Info size={17} />
+                </button>
+                <button
+                  className="icon-button replay-draw"
+                  aria-label="重播抽牌"
+                  title="播放完整抽牌动画，不会重抽"
+                  disabled={drawing}
+                  onClick={() => draw(drawTarget.current?.getBoundingClientRect(), true)}
+                >
+                  <RotateCcw size={17} />
+                </button>
+              </div>
             </div>
-            {meaningOpen && <p className="meaning-detail">{card.detail}</p>}
-            <div className="saved-card-label">
-              <CheckCheck size={15} />
-              今天的牌，已为你留好
-            </div>
+            <p className="card-symbols">
+              <span>常见象征</span>
+              {card.symbols.join(' · ')}
+            </p>
+            <p className="daily-prompt">{card.todayHint}</p>
             <HoldToRecordButton
               className="primary-button today-record-button"
               {...voiceGesture}
-              aria-label={`${today?.text || today?.audioId ? '再看看今天的一句话' : '现在想留一句'}，按住说话`}
+              aria-label={`${today?.text || today?.audioId ? '查看今天的记录' : '留一句'}，按住说话`}
             >
               <Mic size={17} />
-              {today?.text || today?.audioId ? '再看看今天的一句话' : '现在想留一句'}
+              {today?.text || today?.audioId ? '查看今天的记录' : '留一句'}
               <ArrowRight size={16} />
             </HoldToRecordButton>
           </div>

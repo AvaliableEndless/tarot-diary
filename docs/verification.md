@@ -4,8 +4,8 @@
 
 ## 已执行
 
-- `npm run check`：通过，包括 ESLint、26 个 Node 单元测试、78 张 WebP 素材与目录检查、Vite 生产构建。
-- `node node_modules/@playwright/test/cli.js test --workers 2`：使用已安装的 Edge，38 个浏览器测试全部通过。本机 npm 的参数转发拒绝 `--workers`，因此直接调用相同的 Playwright CLI。
+- `npm run check`：通过，包括 ESLint、28 个 Node 单元测试、78 张 WebP 素材与目录检查、Vite 生产构建。
+- `node node_modules/@playwright/test/cli.js test --workers 2`：使用已安装的 Edge，41 个浏览器测试全部通过。本机 npm 的参数转发拒绝 `--workers`，因此直接调用相同的 Playwright CLI。
 - 在 320、390、768、1440 px 宽度下验证今天、抽牌后、复盘、回看四种页面，未发现页面横向溢出或 JavaScript 异常。
 - 最终四屏设计板已重新截图并目视检查，文件为 `docs/ui-board.png`。
 - 桌面顶部录音入口、双栏回看、关键字与状态筛选、牌库键盘操作、未保存确认框焦点、横屏低高度和软键盘视口均有专门的浏览器用例。手机回看首屏显示一条完整记录，筛选栏按需展开。效果图为 `docs/desktop.png`、`docs/mobile-record.png` 和 `docs/mobile-history.png`。
@@ -28,6 +28,8 @@
 本次独立 Edge 测试浏览器在系统减少动态效果下截图检查完整翻牌与手机/桌面录音浮层，文件为 `mobile-full-motion.png`、`mobile-hold.png`、`mobile-hold-review.png`、`desktop-hold.png`。完整模式读取到 `draw-card-reveal` 动画与可见正面。此前用户实际 Edge 标签报告减少动态效果，定位旧版跳过动画的原因；本次重试时插件返回 `Debugger unattached`，窗口工具随后因无法确认网址是否允许访问而停止，未完成用户实际窗口的最终验收，也未改动其浏览器权限或录制真实环境声音。
 
 重播洗牌补充验证：3 个新用例在修复前均复现失败，修复后通过。390 px 与 1440 px 下，在柔和偏好和系统减少动态效果同时开启时，重播仍显示完整三张牌；逐帧测量左右牌中心均向外移动超过 12 px，三张图已加载，跳过按钮不与牌面边界相交，牌意在重播结束后恢复，原偏好保持不变。另截图检查 320、768、1440 px 重播，牌面可见且没有横向溢出。`draw-preview.gif` 已从当前网页重新录制，共 19 帧。
+
+精简牌面补充验证：公开读取并核对 Labyrinthos 的 78 张正位关键词表，数据测试检查全牌 ID、三关键词、短句长度与牌名对应的来源链接。新增 3 个浏览器用例验证精简层级、来源与审判原文，并逐张测量 78 张牌在 320 px 下的布局：象征一行、联想不超过两行、牌名不碰工具、说明区域低于 210 px。手机、窄屏、桌面与详情已分别截图目视检查，文件为 `compact-mobile.png`、`compact-small.png`、`compact-desktop.png`、`compact-card-detail.png`。
 
 ## 验证边界
 

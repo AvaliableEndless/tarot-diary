@@ -1,0 +1,478 @@
+{
+  "source": {
+    "name": "Labyrinthos",
+    "url": "https://labyrinthos.co/blogs/tarot-card-meanings-list",
+    "checkedOn": "2026-11-22",
+    "orientation": "upright"
+  },
+  "cards": [
+    {
+      "id": 1,
+      "symbols": ["纯真", "新的开始", "自由"],
+      "today": "今天，一个意外的邀请，也许会成为新开始。",
+      "source": "the-fool-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 2,
+      "symbols": ["意志", "创造", "实现"],
+      "today": "今天，手边已有的资源，或许能让一个想法落地。",
+      "source": "the-magician-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 3,
+      "symbols": ["直觉", "潜意识", "内在声音"],
+      "today": "今天，一个不经意的感受，也许值得再听一听。",
+      "source": "the-high-priestess-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 4,
+      "symbols": ["母性", "丰饶", "自然"],
+      "today": "今天，一次照顾或被照顾，可能让你感到温暖。",
+      "source": "the-empress-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 5,
+      "symbols": ["权威", "秩序", "掌控"],
+      "today": "今天，一件需要拿主意的事，或许会来到面前。",
+      "source": "the-emperor-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 6,
+      "symbols": ["传统", "规范", "伦理"],
+      "today": "今天，一位前辈的经验，也许会帮你理清疑问。",
+      "source": "the-hierophant-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 7,
+      "symbols": ["伙伴", "两面性", "结合"],
+      "today": "今天，一次交流或选择，可能让你更清楚心意。",
+      "source": "the-lovers-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 8,
+      "symbols": ["方向", "掌控", "意志"],
+      "today": "今天，一件停在原地的事，也许能往前走一步。",
+      "source": "the-chariot-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 9,
+      "symbols": ["内在力量", "勇气", "慈悲"],
+      "today": "今天，一个棘手的时刻，或许能被温和地化解。",
+      "source": "strength-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 10,
+      "symbols": ["沉思", "求真", "内在指引"],
+      "today": "今天，一小段独处，也许会让某个问题清楚些。",
+      "source": "the-hermit-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 11,
+      "symbols": ["变化", "循环", "命运"],
+      "today": "今天，计划之外的小变化，也许会带来新转机。",
+      "source": "the-wheel-of-fortune-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 12,
+      "symbols": ["因果", "清晰", "真相"],
+      "today": "今天，一次核对，可能会让事情与你原想的不同。",
+      "source": "justice-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 13,
+      "symbols": ["牺牲", "放下", "奉献"],
+      "today": "今天，暂时放下一件事，也许会看见不同的角度。",
+      "source": "the-hanged-man-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 14,
+      "symbols": ["结束", "新生", "转变"],
+      "today": "今天，一件事的结束，也许能腾出新的空间。",
+      "source": "death-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 15,
+      "symbols": ["中道", "耐心", "寻找意义"],
+      "today": "今天，一次小小的调整，可能让生活舒服一点。",
+      "source": "temperance-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 16,
+      "symbols": ["沉迷", "物质欲望", "享乐"],
+      "today": "今天，一个反复出现的习惯，也许会被你注意到。",
+      "source": "the-devil-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 17,
+      "symbols": ["突变", "自负受挫", "崩塌"],
+      "today": "若今天有事偏离预期，也许值得重新看看原计划。",
+      "source": "the-tower-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 18,
+      "symbols": ["希望", "信念", "复苏"],
+      "today": "今天，一句回应或一个小进展，也许会带来期待。",
+      "source": "the-star-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 19,
+      "symbols": ["潜意识", "幻象", "直觉"],
+      "today": "今天，一件拿不准的事，也许还需要多一点信息。",
+      "source": "the-moon-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 20,
+      "symbols": ["喜悦", "成功", "庆祝"],
+      "today": "今天，一个轻松的小片刻，或许值得多停留一下。",
+      "source": "the-sun-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 21,
+      "symbols": ["内省", "审视", "觉醒"],
+      "today": "今天，一件旧事或许会让你有新的理解。",
+      "source": "judgement-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 22,
+      "symbols": ["圆满", "和谐", "完成"],
+      "today": "今天，一件终于收尾的小事，也许值得庆祝。",
+      "source": "the-world-meaning-major-arcana-tarot-card-meanings"
+    },
+    {
+      "id": 23,
+      "symbols": ["创造", "意志", "灵感"],
+      "today": "今天，一个突然冒出的念头，或许值得试一试。",
+      "source": "ace-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 24,
+      "symbols": ["规划", "决定", "走出去"],
+      "today": "今天，两个可能的方向，也许需要你选出一个。",
+      "source": "two-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 25,
+      "symbols": ["远望", "拓展", "成长"],
+      "today": "今天，一个新消息，也许会让你看见更远的可能。",
+      "source": "three-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 26,
+      "symbols": ["社群", "家园", "庆祝"],
+      "today": "今天，一次相聚，也许会让平常的日子亮起来。",
+      "source": "four-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 27,
+      "symbols": ["竞争", "较量", "冲突"],
+      "today": "今天，一次意见不合，也许能让彼此的想法更清楚。",
+      "source": "five-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 28,
+      "symbols": ["胜利", "成功", "认可"],
+      "today": "今天，一点被看见的努力，可能会带来鼓励。",
+      "source": "six-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 29,
+      "symbols": ["坚持", "防守", "掌控"],
+      "today": "今天，一个需要表明立场的时刻，或许会出现。",
+      "source": "seven-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 30,
+      "symbols": ["迅速行动", "流动", "决断"],
+      "today": "今天，一条及时的消息，可能会推动一件事。",
+      "source": "eight-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 31,
+      "symbols": ["韧性", "毅力", "坚守"],
+      "today": "今天，一件还没完成的事，也许会考验你的耐心。",
+      "source": "nine-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 32,
+      "symbols": ["成就", "责任", "负担"],
+      "today": "今天，手里的某件事，或许可以请人一起分担。",
+      "source": "ten-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 33,
+      "symbols": ["探索", "兴奋", "自由"],
+      "today": "今天，一个不熟悉的小机会，也许会勾起好奇。",
+      "source": "page-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 34,
+      "symbols": ["行动", "冒险", "无畏"],
+      "today": "今天，一点热情，可能会带你迈出犹豫的那一步。",
+      "source": "knight-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 35,
+      "symbols": ["勇气", "决心", "喜悦"],
+      "today": "今天，一个展现自己的机会，也许值得接住。",
+      "source": "queen-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 36,
+      "symbols": ["全局观", "领导", "克服挑战"],
+      "today": "今天，一件需要有人带头的事，也许会等你开口。",
+      "source": "king-of-wands-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 37,
+      "symbols": ["新的感受", "精神性", "直觉"],
+      "today": "今天，一个细小的瞬间，或许会悄悄触动你。",
+      "source": "ace-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 38,
+      "symbols": ["联合", "伙伴", "连结"],
+      "today": "今天，一次真诚的回应，也许会让你们更靠近。",
+      "source": "two-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 39,
+      "symbols": ["友谊", "社群", "快乐"],
+      "today": "今天，与朋友分享的一件小事，可能会带来快乐。",
+      "source": "three-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 40,
+      "symbols": ["淡漠", "沉思", "疏离"],
+      "today": "今天，一次没想参与的邀约，也许会让你看清状态。",
+      "source": "four-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 41,
+      "symbols": ["失落", "悲伤", "自怜"],
+      "today": "若今天有一点失落，也许可以先把它说出来。",
+      "source": "five-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 42,
+      "symbols": ["熟悉", "美好回忆", "疗愈"],
+      "today": "今天，一个熟悉的人或物，也许会唤起一段回忆。",
+      "source": "six-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 43,
+      "symbols": ["寻找目标", "选择", "幻想"],
+      "today": "今天，几个诱人的选项，或许会让你重新辨认心意。",
+      "source": "seven-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 44,
+      "symbols": ["离开", "幻灭", "放下"],
+      "today": "今天，一件曾经在意的事，也许已经没那么重要。",
+      "source": "eight-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 45,
+      "symbols": ["满足", "情绪稳定", "享受"],
+      "today": "今天，一个已经拥有的小满足，也许会被你看见。",
+      "source": "nine-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 46,
+      "symbols": ["内心幸福", "圆满", "梦想成真"],
+      "today": "今天，和在意的人待在一起，或许就是一个好片刻。",
+      "source": "ten-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 47,
+      "symbols": ["惊喜", "梦想", "敏感"],
+      "today": "今天，一份小心意或一句话，也许会带来惊喜。",
+      "source": "page-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 48,
+      "symbols": ["追随内心", "理想", "浪漫"],
+      "today": "今天，一个表达心意的机会，也许会轻轻出现。",
+      "source": "knight-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 49,
+      "symbols": ["慈悲", "平静", "安慰"],
+      "today": "今天，一次耐心的倾听，或许能安放一点情绪。",
+      "source": "queen-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 50,
+      "symbols": ["慈悲", "掌控", "平衡"],
+      "today": "今天，一个情绪起伏的时刻，也许能被平静接住。",
+      "source": "king-of-cups-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 51,
+      "symbols": ["突破", "清晰", "敏锐"],
+      "today": "今天，一次说清楚的对话，也许能解开一个结。",
+      "source": "ace-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 52,
+      "symbols": ["艰难选择", "犹豫", "僵局"],
+      "today": "今天，一个迟迟没做的决定，也许需要补一点信息。",
+      "source": "two-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 53,
+      "symbols": ["心痛", "苦楚", "悲伤"],
+      "today": "若今天有一句难受的话，也许值得被认真听见。",
+      "source": "three-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 54,
+      "symbols": ["休息", "恢复", "沉思"],
+      "today": "今天，一小段停顿，或许会让你重新有一点力气。",
+      "source": "four-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 55,
+      "symbols": ["野心", "不惜代价", "隐瞒"],
+      "today": "今天，一次争论，或许会让你想想赢之外的代价。",
+      "source": "five-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 56,
+      "symbols": ["过渡", "告别", "向前"],
+      "today": "今天，一个小调整，也许会让你离困扰远一点。",
+      "source": "six-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 57,
+      "symbols": ["欺瞒", "计谋", "策略"],
+      "today": "今天，一条不确定的消息，或许值得多核实一次。",
+      "source": "seven-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 58,
+      "symbols": ["束缚", "受困", "自我限制"],
+      "today": "今天，一个做不到的念头，也许能被拆成具体困难。",
+      "source": "eight-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 59,
+      "symbols": ["焦虑", "无望", "创伤"],
+      "today": "若今天有一件事让你担心，也许可以找人聊一聊。",
+      "source": "nine-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 60,
+      "symbols": ["失败", "崩溃", "挫败"],
+      "today": "若一件事已难以继续，今天也许可以先停在这里。",
+      "source": "ten-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 61,
+      "symbols": ["好奇", "躁动", "思维活力"],
+      "today": "今天，一个新的问题，也许会打开另一条思路。",
+      "source": "page-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 62,
+      "symbols": ["行动", "冲动", "捍卫信念"],
+      "today": "今天，一次想立刻回应的对话，或许值得先停一秒。",
+      "source": "knight-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 63,
+      "symbols": ["复杂性", "洞察", "明晰"],
+      "today": "今天，一件复杂的事，也许能被你分辨得更清楚。",
+      "source": "queen-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 64,
+      "symbols": ["理性", "纪律", "真相"],
+      "today": "今天，一次基于事实的表达，可能会让讨论往前走。",
+      "source": "king-of-swords-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 65,
+      "symbols": ["机会", "繁荣", "新事业"],
+      "today": "今天，一个很实际的小机会，也许值得认真接住。",
+      "source": "ace-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 66,
+      "symbols": ["权衡", "优先次序", "适应变化"],
+      "today": "今天，几件事撞在一起时，也许需要换一个顺序。",
+      "source": "two-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 67,
+      "symbols": ["团队", "协作", "建设"],
+      "today": "今天，一次配合，也许会让一件事变得容易一点。",
+      "source": "three-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 68,
+      "symbols": ["守成", "节俭", "安全感"],
+      "today": "今天，一次关于取舍的小决定，也许会显出你在意什么。",
+      "source": "four-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 69,
+      "symbols": ["匮乏", "贫困", "不安"],
+      "today": "若今天有一点吃力，也许能向身边的人借一点支持。",
+      "source": "five-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 70,
+      "symbols": ["援助", "慷慨", "分享"],
+      "today": "今天，一次给予或被帮助，也许会让你感到踏实。",
+      "source": "six-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 71,
+      "symbols": ["努力", "坚持", "勤勉"],
+      "today": "今天，一件慢慢做的事，或许已经有了一点变化。",
+      "source": "seven-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 72,
+      "symbols": ["学艺", "热爱", "高标准"],
+      "today": "今天，一次不起眼的练习，也许会让你比昨天熟练。",
+      "source": "eight-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 73,
+      "symbols": ["劳动成果", "回报", "享受"],
+      "today": "今天，一件靠自己做成的小事，也许值得好好享用。",
+      "source": "nine-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 74,
+      "symbols": ["积累传承", "圆满", "继承"],
+      "today": "今天，一件熟悉的日常，也许会让你看见长久的积累。",
+      "source": "ten-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 75,
+      "symbols": ["抱负", "渴望", "勤勉"],
+      "today": "今天，一个用得上的新知识，也许会让你想继续学。",
+      "source": "page-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 76,
+      "symbols": ["效率", "勤奋", "责任"],
+      "today": "今天，一件答应过的小事，也许能被你稳稳完成。",
+      "source": "knight-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 77,
+      "symbols": ["务实", "生活舒适", "物质保障"],
+      "today": "今天，一个照顾生活的小动作，或许会让你更安心。",
+      "source": "queen-of-pentacles-meaning-tarot-card-meanings"
+    },
+    {
+      "id": 78,
+      "symbols": ["丰足", "繁荣", "稳固"],
+      "today": "今天，一项稳妥的安排，也许会让之后的你轻松些。",
+      "source": "king-of-pentacles-meaning-tarot-card-meanings"
+    }
+  ]
+}

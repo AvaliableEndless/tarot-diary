@@ -15,20 +15,6 @@
 .card-area {
   position: relative;
 }
-.reading-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-}
-.reading-actions .meaning-toggle {
-  margin: 0;
-}
-.replay-draw {
-  min-height: 44px;
-  font-size: 12px;
-  padding: 0 4px;
-}
 .draw-replay.motion-full:not(.draw-landing) .card-reading,
 .draw-replay.motion-full:not(.draw-landing) .card-caption {
   visibility: hidden;
@@ -37,10 +23,6 @@
   top: -48px;
 }
 @media (min-width: 1100px) {
-  .reading-actions {
-    justify-content: flex-start;
-    margin-top: 9px;
-  }
   .draw-replay .skip-draw {
     top: -64px;
   }
