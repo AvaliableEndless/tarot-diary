@@ -51,6 +51,15 @@ export default function App() {
   );
   const [toast, setToast] = useState('');
   const [drawSession, setDrawSession] = useState(null);
+  const [holdSession, setHoldSession] = useState(null);
+  const [voiceState, setVoiceState] = useState({
+    phase: 'idle',
+    dirty: false,
+    active: false,
+    seconds: 0,
+  });
+  const [inlineDate, setInlineDate] = useState(TODAY);
+  const [focusRequest, setFocusRequest] = useState(0);
   const [skippedDay, setSkippedDay] = useState(null);
   const [month, setMonth] = useState(new Date(`${TODAY.slice(0, 7)}-01T12:00:00`));
   const [selectedDay, setSelectedDay] = useState(null);
@@ -61,14 +70,21 @@ export default function App() {
   const drawTarget = useRef();
   const holdCapture = useRef();
   const holdSequence = useRef(0);
+  const inlineVoice = useRef();
   const today = records.find((record) => record.date === TODAY);
   const yesterday = records.find((record) => record.date === dayAgo(1));
   const card = today?.cardId ? getCard(today.cardId) : null;
   const drawing = Boolean(drawSession);
   const visibleCard =
     drawing && !drawSession.replay && drawSession.phase !== 'landing' ? null : card;
-  const holding = Boolean(modal?.type === 'record' && modal.hold?.held);
+  const holding = Boolean(holdSession?.held);
   const completed = records.filter(hasReflection);
+  useEffect(() => {
+    if (!voiceState.dirty && !voiceState.active && !holding) setInlineDate(TODAY);
+  }, [TODAY, voiceState.dirty, voiceState.active, holding]);
+  useEffect(() => {
+    if (modal) inlineVoice.current?.stopRecording();
+  }, [modal]);
   useEffect(
     () => () => {
       clearTimeout(toastTimer.current);
@@ -81,9 +97,16 @@ export default function App() {
     toastTimer.current = setTimeout(() => setToast(''), 3200);
   };
   const navigate = (target) => {
-    finishDraw();
-    setTab(target);
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (holding) return;
+    const leave = () => {
+      finishDraw();
+      if (target !== tab) setVoiceState({ phase: 'idle', dirty: false, active: false, seconds: 0 });
+      setTab(target);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+    if (tab === 'today' && target !== tab && inlineVoice.current)
+      inlineVoice.current.requestLeave(leave);
+    else leave();
   };
   const finishDraw = () => {
     drawLock.current = false;
@@ -126,30 +149,47 @@ export default function App() {
     }
   };
   const openRecord = (date = TODAY) => {
+    if (holding) return;
     finishDraw();
-    setModal({ type: 'record', date });
+    if (date === TODAY) {
+      if (inlineDate !== TODAY && voiceState.dirty) {
+        notify('请先留好上一天的这一句');
+        return;
+      }
+      setModal(null);
+      setTab('today');
+      setFocusRequest((value) => value + 1);
+    } else {
+      inlineVoice.current?.stopRecording();
+      setModal({ type: 'record', date });
+    }
   };
-  const startHold = () => {
-    if (modal || holdCapture.current?.held) return false;
+  const startHold = ({ source } = {}) => {
+    if (modal || holdCapture.current?.held || inlineVoice.current?.canStartHold() === false)
+      return false;
+    if (inlineDate !== TODAY && voiceState.dirty) {
+      notify('请先留好上一天的这一句');
+      return false;
+    }
     finishDraw();
-    const capture = { id: ++holdSequence.current, held: true, cancelled: false };
+    const capture = { id: ++holdSequence.current, held: true, cancelled: false, source };
     holdCapture.current = capture;
-    setModal({ type: 'record', date: TODAY, hold: capture });
+    setTab('today');
+    setHoldSession(capture);
     return true;
   };
   const moveHold = (cancelled) => {
     const capture = holdCapture.current;
     if (!capture?.held) return;
     capture.cancelled = cancelled;
-    setModal((current) => (current?.hold === capture ? { ...current } : current));
+    setHoldSession({ ...capture });
   };
   const endHold = (cancelled) => {
     const capture = holdCapture.current;
     if (!capture?.held) return;
     capture.held = false;
     capture.cancelled = cancelled;
-    if (cancelled) setModal((current) => (current?.hold === capture ? null : current));
-    else setModal((current) => (current?.hold === capture ? { ...current } : current));
+    setHoldSession({ ...capture });
   };
   const voiceGesture = {
     onTap: () => openRecord(),
@@ -192,8 +232,9 @@ export default function App() {
   return (
     <>
       <div
-        className={`app-shell ${PREVIEW ? 'preview-shell' : ''}`}
-        inert={modal && !holding ? '' : undefined}
+        className={`app-shell ${PREVIEW ? 'preview-shell' : ''} ${voiceState.active ? 'voice-active' : ''}`}
+        inert={modal ? '' : undefined}
+        aria-hidden={modal ? true : undefined}
         data-motion-mode={motion.mode}
         data-system-motion={motion.systemReduced ? 'reduced' : 'full'}
       >
@@ -225,6 +266,7 @@ export default function App() {
           </nav>
           <div className="header-actions">
             <HoldToRecordButton
+              source="desktop-header"
               className="primary-button desktop-capture"
               aria-label="留一句，按住说话"
               {...voiceGesture}
@@ -236,7 +278,11 @@ export default function App() {
               className="icon-button settings-button"
               aria-label="设置与数据"
               title="设置与数据"
-              onClick={() => setModal({ type: 'settings' })}
+              disabled={holding}
+              onClick={() => {
+                inlineVoice.current?.stopRecording();
+                setModal({ type: 'settings' });
+              }}
             >
               <Settings2 size={20} />
             </button>
@@ -252,17 +298,42 @@ export default function App() {
             {tab === 'today' && (
               <TodayPage
                 card={visibleCard}
-                today={today}
                 drawing={drawing}
+                recording={voiceState.active}
                 replaying={Boolean(drawSession?.replay)}
                 motionMode={drawSession?.motion || motion.mode}
-                voiceGesture={voiceGesture}
                 drawPhase={drawSession?.phase}
                 drawTarget={drawTarget}
                 skipDraw={finishDraw}
                 draw={draw}
                 setModal={setModal}
-                openRecord={openRecord}
+                journal={
+                  <Suspense
+                    fallback={
+                      <div className="inline-loading" role="status">
+                        正在准备记录…
+                      </div>
+                    }
+                  >
+                    <Recorder
+                      key={inlineDate}
+                      ref={inlineVoice}
+                      inline
+                      date={inlineDate}
+                      record={records.find((record) => record.date === inlineDate)}
+                      holdCapture={holdSession}
+                      holding={holding}
+                      cancelling={Boolean(holdSession?.cancelled)}
+                      voiceGesture={voiceGesture}
+                      focusRequest={focusRequest}
+                      onStateChange={setVoiceState}
+                      onSave={async (patch) => {
+                        updateRecord(inlineDate, patch);
+                        notify('这一刻，留好了');
+                      }}
+                    />
+                  </Suspense>
+                }
                 renderYesterday={renderYesterday}
                 navigate={navigate}
               />
@@ -371,11 +442,18 @@ export default function App() {
             <Sun size={22} strokeWidth={1.6} />
             <span>今天</span>
           </button>
-          <HoldToRecordButton className="capture-nav" {...voiceGesture} aria-label="按住说话">
+          <HoldToRecordButton
+            source="mobile-nav"
+            className="capture-nav"
+            {...voiceGesture}
+            aria-label="按住说话"
+          >
             <span>
               <Mic size={23} strokeWidth={1.7} />
             </span>
-            <small>按住说话</small>
+            <small>
+              {holding ? (holdSession.cancelled ? '松开取消' : '松开结束') : '按住说话'}
+            </small>
           </HoldToRecordButton>
           <button
             className={tab === 'history' ? 'active' : ''}
@@ -403,7 +481,7 @@ export default function App() {
         />
       )}
       {modal && (
-        <Modal nonBlocking={holding} onClose={() => setModal(null)}>
+        <Modal onClose={() => setModal(null)}>
           <Suspense
             fallback={
               <div className="dialog-loading" role="status">
@@ -415,9 +493,6 @@ export default function App() {
               <Recorder
                 record={records.find((record) => record.date === modal.date)}
                 date={modal.date}
-                holdCapture={modal.hold}
-                holding={holding}
-                cancelling={Boolean(modal.hold?.cancelled)}
                 onClose={() => setModal(null)}
                 onSave={async (patch) => {
                   updateRecord(modal.date, patch);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { forwardRef, useState, useEffect, useRef, useImperativeHandle } from 'react';
 import { Check, Mic, Pause, Play, RotateCcw, Square, Trash2, X } from 'lucide-react';
 import { getCard } from '../../domain/cards.js';
 import { dayAgo, shortDate } from '../../domain/dates.js';
@@ -6,16 +6,24 @@ import { reviewOptions, createReflectionPatch } from '../../domain/diary.js';
 import { getAudio, putAudio, deleteAudio } from '../../services/audio-store.js';
 import { createBrowserSpeechRecognition } from '../../services/speech-recognition.js';
 import { useLocalDay } from '../../hooks/useLocalDay.js';
+import InlineRecorder from './InlineRecorder.jsx';
 
-export default function Recorder({
-  record,
-  date,
-  onClose,
-  onSave,
-  holdCapture,
-  holding = false,
-  cancelling = false,
-}) {
+const Recorder = forwardRef(function Recorder(
+  {
+    record,
+    date,
+    onClose,
+    onSave,
+    holdCapture,
+    holding = false,
+    cancelling = false,
+    inline = false,
+    voiceGesture,
+    focusRequest = 0,
+    onStateChange,
+  },
+  ref,
+) {
   const TODAY = useLocalDay();
   const card = record?.cardId ? getCard(record.cardId) : null;
   const [text, setText] = useState(record?.text || '');
@@ -27,7 +35,8 @@ export default function Recorder({
   const [asr, setAsr] = useState('');
   const [interim, setInterim] = useState('');
   const [audio, setAudio] = useState(null);
-  const [audioUrl, setAudioUrl] = useState('');
+  const [existingAudioUrl, setExistingAudioUrl] = useState('');
+  const [draftAudioUrl, setDraftAudioUrl] = useState('');
   const [removeExistingAudio, setRemoveExistingAudio] = useState(false);
   const [saving, setSaving] = useState(false);
   const [discard, setDiscard] = useState(false);
@@ -45,7 +54,19 @@ export default function Recorder({
   const pendingBlob = useRef();
   const finalizationTimer = useRef();
   const firstSpeechResult = useRef(true);
-  const initialText = useRef(record?.text || '');
+  const baseline = useRef({ text: record?.text || '', status: initialStatus });
+  const holdSnapshot = useRef();
+  const operation = useRef(0);
+  const leaveAction = useRef();
+  const stateCallback = useRef(onStateChange);
+  stateCallback.current = onStateChange;
+  const audioUrl = removeExistingAudio ? '' : audio ? draftAudioUrl : existingAudioUrl;
+  const dirty =
+    text !== baseline.current.text ||
+    status !== baseline.current.status ||
+    Boolean(audio) ||
+    removeExistingAudio;
+  const active = ['recording', 'paused', 'processing', 'requesting'].includes(phase);
   const finishAudio = () => {
     clearTimeout(finalizationTimer.current);
     const blob = pendingBlob.current;
@@ -59,32 +80,43 @@ export default function Recorder({
   useEffect(() => {
     if (discard) discardRef.current?.querySelector('button')?.focus();
   }, [discard]);
-
   useEffect(() => {
-    let url = '';
-    if (record?.audioId)
-      getAudio(record.audioId)
-        .then((blob) => {
-          if (blob && mounted.current) {
-            url = URL.createObjectURL(blob);
-            setAudioUrl(url);
-          }
-        })
-        .catch(() => setError('原录音暂时无法读取，可以继续补写文字。'));
+    mounted.current = true;
     return () => {
       mounted.current = false;
+      operation.current++;
       clearInterval(timerRef.current);
       clearTimeout(finalizationTimer.current);
       recognitionRef.current?.abort();
       if (recorderRef.current?.state !== 'inactive') recorderRef.current?.stop();
       streamRef.current?.getTracks().forEach((track) => track.stop());
-      if (url) URL.revokeObjectURL(url);
     };
   }, []);
   useEffect(() => {
-    if (!audio) return;
+    let live = true;
+    let url = '';
+    setExistingAudioUrl('');
+    if (record?.audioId)
+      getAudio(record.audioId)
+        .then((blob) => {
+          if (blob && live) {
+            url = URL.createObjectURL(blob);
+            setExistingAudioUrl(url);
+          }
+        })
+        .catch(() => live && setError('原录音暂时无法读取，可以继续补写文字。'));
+    return () => {
+      live = false;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [record?.audioId]);
+  useEffect(() => {
+    if (!audio) {
+      setDraftAudioUrl('');
+      return;
+    }
     const url = URL.createObjectURL(audio);
-    setAudioUrl(url);
+    setDraftAudioUrl(url);
     return () => URL.revokeObjectURL(url);
   }, [audio]);
   useEffect(() => {
@@ -92,6 +124,29 @@ export default function Recorder({
     timerRef.current = setInterval(() => setSeconds((value) => value + 1), 1000);
     return () => clearInterval(timerRef.current);
   }, [phase]);
+  useEffect(() => {
+    if (!inline || dirty || active) return;
+    baseline.current = { text: record?.text || '', status: initialStatus };
+    setText(baseline.current.text);
+    setStatus(initialStatus);
+  }, [record, inline]);
+  useEffect(() => {
+    stateCallback.current?.({ phase, dirty, active, seconds });
+  }, [phase, dirty, active, seconds]);
+  useEffect(() => {
+    if (!inline || !focusRequest) return;
+    draftRef.current?.focus({ preventScroll: true });
+    draftRef.current?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  }, [focusRequest, inline]);
+  useEffect(() => {
+    if (!inline || (!dirty && !active)) return;
+    const warn = (event) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [inline, dirty, active]);
   const startRecognition = () => {
     let recognition;
     recognition = createBrowserSpeechRecognition({
@@ -131,12 +186,15 @@ export default function Recorder({
     }
   };
   const start = async (fromHold = false) => {
-    if (pendingPermission.current) return;
+    if (pendingPermission.current || active || saving) return;
+    if (fromHold)
+      holdSnapshot.current = { text, audio, removeExistingAudio, seconds, phase, asr, error };
     if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
       setError('此浏览器无法录音，请直接写下一句话。');
       return;
     }
     pendingPermission.current = true;
+    const version = ++operation.current;
     autoHoldRecording.current = fromHold === true;
     pendingBlob.current = null;
     firstSpeechResult.current = true;
@@ -149,9 +207,13 @@ export default function Recorder({
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
       });
-      if (!mounted.current || (fromHold === true && !holdCapture?.held)) {
+      if (
+        !mounted.current ||
+        version !== operation.current ||
+        (fromHold === true && !holdCapture?.held)
+      ) {
         stream.getTracks().forEach((track) => track.stop());
-        if (mounted.current) {
+        if (mounted.current && version === operation.current) {
           autoHoldRecording.current = false;
           setPhase('idle');
           setError('麦克风已准备好。可以重新录制这一句。');
@@ -165,18 +227,23 @@ export default function Recorder({
         if (event.data.size) chunks.push(event.data);
       };
       recorder.onstop = () => {
-        if (mounted.current && chunks.length) {
+        if (mounted.current && version === operation.current && chunks.length) {
           pendingBlob.current = new Blob(chunks, { type: recorder.mimeType || chunks[0].type });
           if (recognitionRunning.current) finalizationTimer.current = setTimeout(finishAudio, 1200);
           else finishAudio();
-        } else if (mounted.current) {
+        } else if (mounted.current && version === operation.current) {
           setPhase('idle');
           setError((previous) => previous || '没有收到声音，可以重新录一遍，或直接写下来。');
         }
         stream.getTracks().forEach((track) => track.stop());
       };
       recorder.onerror = () => {
-        if (mounted.current) {
+        if (mounted.current && version === operation.current) {
+          const recognition = recognitionRef.current;
+          recognitionRef.current = null;
+          recognitionRunning.current = false;
+          recognition?.abort();
+          autoHoldRecording.current = false;
           setError('录音被中断。请检查已保留的声音，或重新录制。');
           setPhase('idle');
         }
@@ -189,6 +256,7 @@ export default function Recorder({
       recorder.start();
       startRecognition();
     } catch (err) {
+      if (!mounted.current || version !== operation.current) return;
       autoHoldRecording.current = false;
       streamRef.current?.getTracks().forEach((track) => track.stop());
       setPhase('idle');
@@ -208,10 +276,41 @@ export default function Recorder({
     recorderRef.current.stop();
     recognitionRef.current?.stop();
   };
+  const abortCapture = () => {
+    operation.current++;
+    autoHoldRecording.current = false;
+    clearTimeout(finalizationTimer.current);
+    pendingBlob.current = null;
+    const recognition = recognitionRef.current;
+    recognitionRef.current = null;
+    recognitionRunning.current = false;
+    recognition?.abort();
+    if (recorderRef.current?.state !== 'inactive') recorderRef.current?.stop();
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+    setInterim('');
+  };
+  const cancelHold = () => {
+    const snapshot = holdSnapshot.current;
+    if (!snapshot) return;
+    holdSnapshot.current = null;
+    abortCapture();
+    setText(snapshot.text);
+    setAudio(snapshot.audio);
+    setRemoveExistingAudio(snapshot.removeExistingAudio);
+    setSeconds(snapshot.seconds);
+    setPhase(snapshot.phase);
+    setAsr(snapshot.asr);
+    setError(snapshot.error);
+  };
   useEffect(() => {
     if (holdCapture?.held) start(true);
   }, [holdCapture?.id]);
   useEffect(() => {
+    if (holdCapture && !holding && holdCapture.cancelled) {
+      cancelHold();
+      return;
+    }
     if (
       holdCapture &&
       !holding &&
@@ -219,7 +318,7 @@ export default function Recorder({
       ['recording', 'paused'].includes(phase)
     )
       stop();
-  }, [holding, phase, holdCapture?.id]);
+  }, [holding, phase, holdCapture?.id, holdCapture?.cancelled]);
   const togglePause = () => {
     if (phase === 'recording') {
       recorderRef.current.pause();
@@ -231,16 +330,62 @@ export default function Recorder({
       setPhase('recording');
     }
   };
-  const close = () => {
-    if (phase === 'recording' || phase === 'paused') {
-      stop();
-      setDiscard(true);
-      return;
-    }
-    if (text !== (record?.text || '') || audio || removeExistingAudio || status !== initialStatus)
-      setDiscard(true);
-    else onClose();
+  const resetDraft = () => {
+    abortCapture();
+    baseline.current = { text: record?.text || '', status: initialStatus };
+    setText(baseline.current.text);
+    setStatus(initialStatus);
+    setAudio(null);
+    setRemoveExistingAudio(false);
+    setSeconds(0);
+    setPhase('idle');
+    setError('');
+    setAsr('');
+    setDiscard(false);
   };
+  const close = (action = inline ? resetDraft : onClose) => {
+    if (saving || phase === 'processing') return;
+    if (dirty || active) {
+      if (phase === 'recording' || phase === 'paused') stop();
+      if (phase === 'requesting') {
+        abortCapture();
+        setPhase('idle');
+      }
+      leaveAction.current = action;
+      setDiscard(true);
+    } else action();
+  };
+  useImperativeHandle(ref, () => ({
+    requestLeave: close,
+    stopRecording: stop,
+    canStartHold: () => !pendingPermission.current && !active && !saving && !discard,
+  }));
+  useEffect(() => {
+    if (!inline) return;
+    const onKey = (event) => {
+      if (document.querySelector('.modal-backdrop')) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        if (discard) {
+          setDiscard(false);
+          draftRef.current?.focus({ preventScroll: true });
+        } else if (dirty || active) close();
+      }
+      if (event.key !== 'Tab' || !discard) return;
+      const buttons = [...discardRef.current.querySelectorAll('button')];
+      const first = buttons[0],
+        last = buttons.at(-1);
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [inline, discard, dirty, active, phase, saving]);
   const save = async () => {
     if (!canSave) return;
     setSaving(true);
@@ -255,61 +400,99 @@ export default function Recorder({
       await onSave(patch);
       if (record?.audioId && record.audioId !== audioId)
         deleteAudio(record.audioId).catch(() => {});
+      if (inline && mounted.current) {
+        baseline.current = { text: text.trim(), status };
+        setText(text.trim());
+        setAudio(null);
+        setRemoveExistingAudio(false);
+        setPhase('idle');
+        setSaving(false);
+        draftRef.current?.blur();
+      }
     } catch {
       if (audio && audioId && audioId !== record?.audioId) deleteAudio(audioId).catch(() => {});
       setError('没有保存成功，请保留页面并再试一次。');
       setSaving(false);
     }
   };
-  const active = ['recording', 'paused', 'processing', 'requesting'].includes(phase);
-  const canSave = Boolean(
-    text.trim() || status || audio || (!removeExistingAudio && record?.audioId),
-  );
+  const canSave =
+    Boolean(text.trim() || status || audio || (!removeExistingAudio && record?.audioId)) &&
+    (!inline || dirty);
   const dayLabel = date === TODAY ? '今天' : date === dayAgo(1) ? '昨天' : shortDate(date);
   const question = card
     ? card.question.replace(/^今天/, dayLabel)
     : `${dayLabel}，有什么值得留下一句？`;
-  if (holding) {
-    const spoken = text.startsWith(initialText.current)
-      ? text.slice(initialText.current.length).trim()
-      : text;
-    return (
-      <div className={`hold-recording ${cancelling ? 'hold-cancel' : ''}`}>
-        <div className="hold-heading">
-          <span>
-            {cancelling
-              ? '松开取消'
-              : phase === 'requesting'
-                ? '等待麦克风权限'
-                : error
-                  ? '录音未开始'
-                  : phase !== 'recording'
-                    ? '准备录音'
-                    : asr
-                      ? '正在录音'
-                      : '正在识别'}
-          </span>
-          <span className="timer">
-            {String(Math.floor(seconds / 60)).padStart(2, '0')}:
-            {String(seconds % 60).padStart(2, '0')}
-          </span>
-        </div>
-        <div className="hold-mic">{cancelling ? <Trash2 size={28} /> : <Mic size={30} />}</div>
-        <p className="hold-transcript" aria-live="polite">
-          {cancelling
-            ? '这段声音将不会保存'
-            : error ||
-              interim ||
-              spoken ||
-              (phase === 'requesting' ? '允许麦克风后开始' : '正在听你说…')}
-        </p>
-        <div className="hold-footer">
-          <span>{cancelling ? '移回继续录音' : '上滑取消'}</span>
-          <strong>{cancelling ? '松开取消' : '松开结束'}</strong>
-        </div>
+  const discardPrompt = discard && (
+    <div
+      className="discard-confirm"
+      ref={discardRef}
+      role="alertdialog"
+      aria-modal={inline ? undefined : true}
+      aria-label="保留这条记录吗"
+    >
+      <h3>这一句，还没留好。</h3>
+      <p>离开会放弃这次修改。</p>
+      <div>
+        <button
+          className="secondary-button"
+          data-cancel-discard
+          onClick={() => {
+            setDiscard(false);
+            draftRef.current?.focus({ preventScroll: true });
+          }}
+        >
+          继续记录
+        </button>
+        <button
+          className="danger-button"
+          onClick={() => {
+            const action = leaveAction.current;
+            resetDraft();
+            action?.();
+          }}
+        >
+          放弃并离开
+        </button>
       </div>
+    </div>
+  );
+  const removeAudio = () => {
+    setAudio(null);
+    setRemoveExistingAudio(true);
+    setPhase('idle');
+  };
+  if (inline)
+    return (
+      <InlineRecorder
+        captureSource={holdCapture?.source}
+        phase={phase}
+        text={text}
+        interim={interim}
+        seconds={seconds}
+        error={error}
+        asr={asr}
+        audioUrl={audioUrl}
+        stream={streamRef.current}
+        holding={holding}
+        cancelling={cancelling}
+        saving={saving}
+        dirty={dirty}
+        canSave={canSave}
+        active={active}
+        draftRef={draftRef}
+        audioRef={audioRef}
+        title={date === TODAY ? '此刻的一句话' : `${dayLabel}的一句话`}
+        onTextChange={setText}
+        onStart={() => start()}
+        onStop={stop}
+        onPause={togglePause}
+        onRemoveAudio={removeAudio}
+        onSave={save}
+        onDiscard={() => close()}
+        voiceGesture={voiceGesture}
+        discardPrompt={discardPrompt}
+      />
     );
-  }
   return (
     <div className="recorder">
       <div className="modal-heading">
@@ -317,7 +500,7 @@ export default function Recorder({
         <button
           data-recorder-close
           className="icon-button"
-          onClick={close}
+          onClick={() => close()}
           aria-label="关闭记录"
           title="关闭"
           disabled={saving || phase === 'processing'}
@@ -419,16 +602,7 @@ export default function Recorder({
       {audioUrl && !removeExistingAudio && !active && (
         <div className="audio-review">
           <audio ref={audioRef} controls src={audioUrl} />
-          <button
-            className="icon-button"
-            onClick={() => {
-              setAudio(null);
-              setAudioUrl('');
-              setRemoveExistingAudio(true);
-              setPhase('idle');
-            }}
-            aria-label="移除录音"
-          >
+          <button className="icon-button" onClick={removeAudio} aria-label="移除录音">
             <Trash2 size={17} />
           </button>
         </div>
@@ -468,33 +642,9 @@ export default function Recorder({
           {date === TODAY ? '明天的你，会读到今天。' : '这一句，留给以后的自己。'}
         </p>
       </div>
-      {discard && (
-        <div
-          className="discard-confirm"
-          ref={discardRef}
-          role="alertdialog"
-          aria-modal="true"
-          aria-label="保留这条记录吗"
-        >
-          <h3>这一句，还没留好。</h3>
-          <p>离开会放弃这次修改。</p>
-          <div>
-            <button
-              className="secondary-button"
-              data-cancel-discard
-              onClick={() => {
-                setDiscard(false);
-                draftRef.current?.focus({ preventScroll: true });
-              }}
-            >
-              继续记录
-            </button>
-            <button className="danger-button" onClick={onClose}>
-              放弃并离开
-            </button>
-          </div>
-        </div>
-      )}
+      {discardPrompt}
     </div>
   );
-}
+});
+
+export default Recorder;

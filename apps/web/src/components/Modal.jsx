@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-export default function Modal({ children, onClose, nonBlocking = false }) {
+export default function Modal({ children, onClose }) {
   const ref = useRef();
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
@@ -15,7 +15,6 @@ export default function Modal({ children, onClose, nonBlocking = false }) {
     else closeRef.current();
   };
   useEffect(() => {
-    if (nonBlocking) return;
     const before = document.activeElement;
     ref.current.focus({ preventScroll: true });
     const original = {
@@ -62,18 +61,18 @@ export default function Modal({ children, onClose, nonBlocking = false }) {
       document.removeEventListener('keydown', onKey);
       if (before?.isConnected) before.focus({ preventScroll: true });
     };
-  }, [nonBlocking]);
+  }, []);
   return (
     <div
-      className={`modal-backdrop ${nonBlocking ? 'hold-backdrop' : ''}`}
+      className="modal-backdrop"
       onClick={(event) => event.target === event.currentTarget && requestClose()}
     >
       <section
         className="modal-sheet"
         ref={ref}
         tabIndex={-1}
-        role={nonBlocking ? 'status' : 'dialog'}
-        aria-modal={nonBlocking ? undefined : true}
+        role="dialog"
+        aria-modal="true"
         aria-label="拾念记录详情"
       >
         <span className="sheet-handle" />

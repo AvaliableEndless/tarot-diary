@@ -1,33 +1,20 @@
 import React, { useRef } from 'react';
-import {
-  ArrowRight,
-  ChevronsRight,
-  Feather,
-  Grid2X2,
-  Info,
-  Mic,
-  Pencil,
-  Plus,
-  RotateCcw,
-  Sparkles,
-} from 'lucide-react';
+import { ArrowRight, ChevronsRight, Grid2X2, Info, Plus, RotateCcw, Sparkles } from 'lucide-react';
 import { getCard } from '../domain/cards.js';
 import CardBack from '../features/cards/CardBack.jsx';
-import HoldToRecordButton from '../components/HoldToRecordButton.jsx';
 
 export default function TodayPage({
   card,
-  today,
   drawing,
+  recording,
   replaying,
   motionMode,
-  voiceGesture,
   drawPhase,
   drawTarget,
   skipDraw,
   draw,
   setModal,
-  openRecord,
+  journal,
   renderYesterday,
   navigate,
 }) {
@@ -41,7 +28,7 @@ export default function TodayPage({
   }[drawPhase];
   return (
     <>
-      <div className="page-heading">
+      <div className={`page-heading ${card ? 'has-drawn-card' : ''}`}>
         <p className="eyebrow">
           {new Date().toLocaleDateString('zh-CN', {
             month: 'long',
@@ -51,7 +38,9 @@ export default function TodayPage({
           <span className="tiny-line" />
           一日一牌
         </p>
-        <h1>{card ? '这一张，属于今天。' : '今天，会有什么发生？'}</h1>
+        <h1 className={card ? 'sr-only' : undefined}>
+          {card ? '今天的一张牌' : '今天，会有什么发生？'}
+        </h1>
         {!card && <p className="heading-sub">给平常的一天，一个小小的期待。</p>}
         <button
           className="icon-button mobile-deck"
@@ -79,7 +68,7 @@ export default function TodayPage({
             <button
               className="deck-stack"
               onClick={startDraw}
-              disabled={drawing}
+              disabled={drawing || recording}
               aria-label="翻开今天的牌"
             >
               <img
@@ -102,6 +91,7 @@ export default function TodayPage({
           ) : (
             <button
               className="revealed-card"
+              disabled={recording}
               ref={drawTarget}
               onClick={() => setModal({ type: 'card', cardId: card.id })}
               aria-label={`查看${card.name}牌意`}
@@ -138,6 +128,7 @@ export default function TodayPage({
               <div className="card-tools">
                 <button
                   className="icon-button"
+                  disabled={recording}
                   aria-label={`查看${card.name}牌义与来源`}
                   title="牌义与来源"
                   onClick={() => setModal({ type: 'card', cardId: card.id })}
@@ -148,7 +139,7 @@ export default function TodayPage({
                   className="icon-button replay-draw"
                   aria-label="重播抽牌"
                   title="播放完整抽牌动画，不会重抽"
-                  disabled={drawing}
+                  disabled={drawing || recording}
                   onClick={() => draw(drawTarget.current?.getBoundingClientRect(), true)}
                 >
                   <RotateCcw size={17} />
@@ -160,19 +151,14 @@ export default function TodayPage({
               {card.symbols.join(' · ')}
             </p>
             <p className="daily-prompt">{card.todayHint}</p>
-            <HoldToRecordButton
-              className="primary-button today-record-button"
-              {...voiceGesture}
-              aria-label={`${today?.text || today?.audioId ? '查看今天的记录' : '留一句'}，按住说话`}
-            >
-              <Mic size={17} />
-              {today?.text || today?.audioId ? '查看今天的记录' : '留一句'}
-              <ArrowRight size={16} />
-            </HoldToRecordButton>
           </div>
         ) : (
           <div className="draw-action">
-            <button className="primary-button draw-button" onClick={startDraw} disabled={drawing}>
+            <button
+              className="primary-button draw-button"
+              onClick={startDraw}
+              disabled={drawing || recording}
+            >
               {drawing ? (
                 <>
                   <Sparkles size={17} />
@@ -189,25 +175,8 @@ export default function TodayPage({
           </div>
         )}
       </section>
+      <div className="journal-slot">{journal}</div>
       <div className="mobile-yesterday">{renderYesterday()}</div>
-      {today?.text && (
-        <section className="today-quote">
-          <div className="section-line">
-            <h2>
-              <Feather size={15} />
-              今天的一句话
-            </h2>
-            <button
-              className="text-button"
-              onClick={() => openRecord()}
-              aria-label="编辑今天的一句话"
-            >
-              <Pencil size={15} />
-            </button>
-          </div>
-          <p>{today.text}</p>
-        </section>
-      )}
     </>
   );
 }

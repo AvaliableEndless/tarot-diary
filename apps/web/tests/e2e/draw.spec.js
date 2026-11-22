@@ -106,11 +106,11 @@ test('full motion overrides system reduction without Web Animations and replays 
   const before = await savedDraw(page);
   await expect(page.locator('.draw-transition')).toHaveCount(0);
   await page.getByRole('button', { name: '按住说话', exact: true }).click();
-  await page.locator('#journal-text').fill('重播时保留这句话。');
+  await page.getByRole('textbox').fill('重播时保留这句话。');
   await page.getByRole('button', { name: '留好这一刻', exact: true }).click();
   await page.getByRole('button', { name: /重播.*牌/, exact: true }).click();
   await expect(page.locator('.draw-transition')).toHaveAttribute('data-phase', 'reveal');
-  await expect(page.locator('.today-quote')).toContainText('重播时保留这句话。');
+  await expect(page.getByRole('textbox')).toHaveValue('重播时保留这句话。');
   await expect(page.locator('.draw-transition')).toHaveCount(0);
   const after = await savedDraw(page);
   expect(after).toHaveLength(1);
@@ -125,11 +125,11 @@ test('recording can open during the motion with the same saved card', async ({ p
   const saved = await savedDraw(page);
   await page.getByRole('button', { name: '按住说话', exact: true }).click();
   await expect(page.locator('.draw-transition')).toHaveCount(0);
-  await expect(page.locator('.record-question img')).toHaveAttribute(
+  await expect(page.locator('.revealed-card img')).toHaveAttribute(
     'src',
     `/cards/${String(saved[0].cardId).padStart(2, '0')}.webp`,
   );
-  await page.getByRole('button', { name: '关闭记录', exact: true }).click();
+  await expect(page.locator('.modal-backdrop')).toHaveCount(0);
   await expect(page.locator('.revealed-card')).toBeVisible();
 });
 

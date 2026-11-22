@@ -15,13 +15,13 @@ test('daily draw, yesterday review and editable journal survive refresh', async 
   await expect(page.locator('.mobile-yesterday')).toContainText('没有发生');
 
   await page.getByRole('button', { name: '按住说话', exact: true }).click();
-  await page.locator('#journal-text').fill('今天完成了可以试用的第一步。');
+  await page.getByRole('textbox').fill('今天完成了可以试用的第一步。');
   await page.keyboard.press('Escape');
   await expect(page.getByRole('alertdialog')).toBeVisible();
   await page.getByRole('button', { name: '继续记录', exact: true }).click();
   await page.getByRole('button', { name: '留好这一刻', exact: true }).click();
   await page.reload();
-  await expect(page.locator('.today-quote')).toContainText('可以试用的第一步');
+  await expect(page.getByRole('textbox')).toHaveValue('今天完成了可以试用的第一步。');
   const records = await page.evaluate(() => JSON.parse(localStorage.getItem('shinian-tarot-v1')));
   expect(records.find((record) => record.text.includes('可以试用')).status).toBe('noted');
   await page.locator('.bottom-nav').getByRole('button', { name: '回看', exact: true }).click();
@@ -60,7 +60,7 @@ test('corrupted stored data is not silently replaced', async ({ page }) => {
 test('a failed text write leaves the editor and draft available', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '按住说话', exact: true }).click();
-  await page.locator('#journal-text').fill('这句话不能因为保存失败而丢失。');
+  await page.getByRole('textbox').fill('这句话不能因为保存失败而丢失。');
   await page.evaluate(() => {
     Storage.prototype.setItem = () => {
       throw new DOMException('quota', 'QuotaExceededError');
@@ -68,7 +68,7 @@ test('a failed text write leaves the editor and draft available', async ({ page 
   });
   await page.getByRole('button', { name: '留好这一刻', exact: true }).click();
   await expect(page.locator('.record-error')).toContainText('没有保存成功');
-  await expect(page.locator('#journal-text')).toHaveValue('这句话不能因为保存失败而丢失。');
+  await expect(page.getByRole('textbox')).toHaveValue('这句话不能因为保存失败而丢失。');
   await expect(page.locator('.save-button')).toBeEnabled();
 });
 
@@ -115,7 +115,7 @@ test.describe('audio capture', () => {
         window.testCapturedStream.getTracks().every((track) => track.readyState === 'ended'),
       ),
     ).toBe(true);
-    await expect(page.locator('#journal-text')).toBeEnabled();
+    await expect(page.getByRole('textbox')).toBeEnabled();
   });
   test('real recorder pauses, persists original audio and exports it', async ({ page }) => {
     await page.addInitScript(() => {
@@ -133,12 +133,11 @@ test.describe('audio capture', () => {
     await page.getByRole('button', { name: '结束录音', exact: true }).click();
     await expect(page.locator('.audio-review audio')).toHaveAttribute('src', /^blob:/);
     await expect(page.locator('.asr-note')).toContainText('不支持自动转写');
-    await page.locator('#journal-text').fill('测试原始录音保存。');
+    await page.getByRole('textbox').fill('测试原始录音保存。');
     await page.getByRole('button', { name: '留好这一刻', exact: true }).click();
     await page.reload();
     await page.getByRole('button', { name: '按住说话', exact: true }).click();
     await expect(page.locator('.audio-review audio')).toHaveAttribute('src', /^blob:/);
-    await page.getByRole('button', { name: '关闭记录', exact: true }).click();
     await page.getByRole('button', { name: '设置与数据', exact: true }).click();
     const downloadPromise = page.waitForEvent('download');
     await page.getByRole('button', { name: /导出全部记录/ }).click();
@@ -155,14 +154,14 @@ test.describe('audio capture', () => {
     ).toBe(true);
     await page.getByRole('button', { name: '关闭设置', exact: true }).click();
     await page.getByRole('button', { name: '按住说话', exact: true }).click();
-    await page.locator('#journal-text').fill('');
+    await page.getByRole('textbox').fill('');
     await page.getByRole('button', { name: '移除录音', exact: true }).click();
     await expect(page.locator('.save-button')).toBeDisabled();
-    await page.getByRole('button', { name: '关闭记录', exact: true }).click();
+    await page.getByRole('button', { name: '放弃本次修改', exact: true }).click();
     await page.getByRole('button', { name: '放弃并离开', exact: true }).click();
     await page.getByRole('button', { name: '按住说话', exact: true }).click();
     await expect(page.locator('.audio-review audio')).toHaveAttribute('src', /^blob:/);
-    await expect(page.locator('#journal-text')).toHaveValue('测试原始录音保存。');
+    await expect(page.getByRole('textbox')).toHaveValue('测试原始录音保存。');
   });
 });
 
@@ -174,7 +173,7 @@ for (const width of [320, 390, 768, 1440]) {
       const onError = (error) => errors.push(error.message);
       page.on('pageerror', onError);
       await page.goto(`/?preview=${screen}`);
-      await expect(page.locator('h1')).toBeVisible();
+      await expect(page.locator('h1')).toBeAttached();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );
@@ -237,7 +236,7 @@ test('closing and reopening the dirty confirmation keeps keyboard focus inside',
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '按住说话', exact: true }).click();
-  await page.locator('#journal-text').fill('明天可以回来看。');
+  await page.getByRole('textbox').fill('明天可以回来看。');
   await page.keyboard.press('Escape');
   const confirm = page.getByRole('alertdialog');
   await expect(confirm).toBeVisible();
@@ -246,8 +245,8 @@ test('closing and reopening the dirty confirmation keeps keyboard focus inside',
   await expect(confirm.getByRole('button', { name: '放弃并离开', exact: true })).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(confirm).toHaveCount(0);
-  await expect(page.locator('#journal-text')).toBeFocused();
-  await expect(page.locator('#journal-text')).toHaveValue('明天可以回来看。');
+  await expect(page.getByRole('textbox')).toBeFocused();
+  await expect(page.getByRole('textbox')).toHaveValue('明天可以回来看。');
 });
 
 test('clearing an existing review result still requires discard confirmation', async ({ page }) => {
@@ -258,7 +257,7 @@ test('clearing an existing review result still requires discard confirmation', a
   await expect(page.locator('.modal-sheet')).toHaveCount(0);
   await page.locator('.mobile-yesterday .yesterday-row').click();
   await page.getByRole('button', { name: '有这样的时刻', exact: true }).click();
-  await expect(page.locator('.save-button')).toBeDisabled();
+  await expect(page.locator('.modal-sheet .save-button')).toBeDisabled();
   await page.getByRole('button', { name: '关闭记录', exact: true }).click();
   await expect(page.getByRole('alertdialog')).toBeVisible();
 });
@@ -271,14 +270,14 @@ test('the save action remains visible with a reduced visual viewport', async ({ 
   });
   await page.goto('/');
   await page.getByRole('button', { name: '按住说话', exact: true }).click();
-  await page.locator('#journal-text').fill('键盘打开后也要能保存。');
+  await page.getByRole('textbox').fill('键盘打开后也要能保存。');
   await page.evaluate(() => {
     window.visualViewport.height = 400;
     window.visualViewport.dispatchEvent(new Event('resize'));
   });
   await expect(page.locator('html')).toHaveClass(/keyboard-open/);
   await expect(page.locator('.bottom-nav')).toBeHidden();
-  const save = await page.locator('.save-button').boundingBox();
+  const save = await page.locator('.inline-recorder .save-button').boundingBox();
   expect(save.y).toBeGreaterThanOrEqual(0);
   expect(save.y + save.height).toBeLessThanOrEqual(400);
   await page.evaluate(() => {
@@ -299,8 +298,8 @@ test('the save action remains visible with a reduced visual viewport', async ({ 
 test('small landscape recorders scroll without hiding their save action', async ({ page }) => {
   await page.setViewportSize({ width: 667, height: 375 });
   await page.goto('/?preview=record');
-  await expect(page.locator('#journal-text')).toBeAttached();
-  const save = await page.locator('.save-button').boundingBox();
+  await expect(page.getByRole('textbox')).toBeAttached();
+  const save = await page.locator('.modal-sheet .save-button').boundingBox();
   expect(save.y).toBeGreaterThanOrEqual(0);
   expect(save.y + save.height).toBeLessThanOrEqual(375);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

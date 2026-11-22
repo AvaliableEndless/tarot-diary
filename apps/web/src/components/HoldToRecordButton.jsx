@@ -6,6 +6,7 @@ export default function HoldToRecordButton({
   onHoldMove,
   onHoldEnd,
   preload,
+  source,
   className = '',
   children,
   ...props
@@ -68,8 +69,8 @@ export default function HoldToRecordButton({
         event.currentTarget.setPointerCapture(event.pointerId);
         timer.current = setTimeout(() => {
           if (gesture.current !== current || current.moved) return;
-          if (callbacks.current.onHoldStart() === false) {
-            gesture.current = null;
+          if (callbacks.current.onHoldStart({ source }) === false) {
+            current.moved = true;
             return;
           }
           current.started = true;
