@@ -1,34 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Leaf, Pencil, Trash2, X } from 'lucide-react';
 import { getCard } from '../../domain/cards.js';
 import { shortDate } from '../../domain/dates.js';
-import { statusNames } from '../../domain/diary.js';
-import { getAudio } from '../../services/audio-store.js';
+import { statusNames, getAudioIds } from '../../domain/diary.js';
+import AudioClips from './AudioClips.jsx';
 
 export default function EntryDetail({ record, onClose, onEdit, onDelete }) {
-  const [audioUrl, setAudioUrl] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [audioError, setAudioError] = useState('');
-  useEffect(() => {
-    let url,
-      cancelled = false;
-    if (record?.audioId)
-      getAudio(record.audioId)
-        .then((blob) => {
-          if (cancelled) return;
-          if (!blob) {
-            setAudioError('这段音频暂时无法读取。');
-            return;
-          }
-          url = URL.createObjectURL(blob);
-          setAudioUrl(url);
-        })
-        .catch(() => setAudioError('这段音频暂时无法读取。'));
-    return () => {
-      cancelled = true;
-      if (url) URL.revokeObjectURL(url);
-    };
-  }, [record?.audioId]);
   if (!record)
     return (
       <div className="settings-panel">
@@ -39,6 +17,7 @@ export default function EntryDetail({ record, onClose, onEdit, onDelete }) {
       </div>
     );
   const card = record.cardId ? getCard(record.cardId) : null;
+  const clips = getAudioIds(record).map((id) => ({ id }));
   return (
     <div className="entry-detail">
       <div className="modal-heading">
@@ -68,12 +47,10 @@ export default function EntryDetail({ record, onClose, onEdit, onDelete }) {
           {statusNames[record.status]}
         </span>
         <p>
-          {record.text ||
-            (record.audioId ? '有些时刻，声音就足够了。' : '这一天，还在等一句回声。')}
+          {record.text || (clips.length ? '有些时刻，声音就足够了。' : '这一天，还在等一句回声。')}
         </p>
       </div>
-      {audioUrl && <audio controls src={audioUrl} />}
-      {audioError && <p className="record-error">{audioError}</p>}
+      <AudioClips clips={clips} />
       <div className="detail-actions">
         <button className="secondary-button" onClick={onEdit}>
           <Pencil size={16} />

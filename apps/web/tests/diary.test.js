@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   createReflectionPatch,
+  getAudioIds,
   hasReflection,
   upsertRecord,
   validateRecords,
@@ -58,4 +59,30 @@ test('invalid dates, statuses, duplicate days and card IDs are rejected', () => 
   assert.throws(() => upsertRecord([], day, { cardId: 79 }));
   assert.throws(() => upsertRecord([], day, { status: 'guaranteed' }));
   assert.throws(() => validateRecords([...records, ...records]));
+});
+
+test('multiple voice inputs stay on the same date and retain the original card', () => {
+  const first = upsertRecord([], day, { cardId: 18, text: '原记录', status: 'noted' });
+  const second = upsertRecord(
+    first,
+    day,
+    createReflectionPatch({
+      text: '人工修改后的原记录\n第一段口述\n第二段口述',
+      audioIds: ['voice-1', 'voice-2'],
+    }),
+  );
+  assert.equal(second.length, 1);
+  assert.equal(second[0].cardId, 18);
+  assert.equal(second[0].text, '人工修改后的原记录\n第一段口述\n第二段口述');
+  assert.deepEqual(getAudioIds(second[0]), ['voice-1', 'voice-2']);
+  assert.equal(second[0].audioId, 'voice-1');
+});
+
+test('legacy recordings remain readable and malformed clip collections are rejected', () => {
+  assert.deepEqual(getAudioIds({ audioId: 'legacy' }), ['legacy']);
+  assert.deepEqual(getAudioIds(null), []);
+  for (const audioIds of [['a', 'a'], [''], [9], 'a']) {
+    assert.throws(() => upsertRecord([], day, { audioIds }));
+  }
+  assert.throws(() => upsertRecord([], day, { audioId: 'old', audioIds: ['different'] }));
 });

@@ -13,7 +13,7 @@ import {
 import { cards, getCard } from '../domain/cards.js';
 import { dayAgo, parseDate, shortDate } from '../domain/dates.js';
 import { deleteAudio } from '../services/audio-store.js';
-import { hasReflection } from '../domain/diary.js';
+import { hasReflection, getAudioIds } from '../domain/diary.js';
 import { useDiary } from '../hooks/useDiary.js';
 import { useLocalDay } from '../hooks/useLocalDay.js';
 import { useViewportMetrics } from '../hooks/useViewportMetrics.js';
@@ -206,8 +206,9 @@ export default function App() {
       return;
     }
     // Delete text first so a failed text write cannot leave a record pointing at deleted audio.
-    if (record.audioId)
-      deleteAudio(record.audioId).catch(() => notify('记录已删除，音频清理稍后重试'));
+    Promise.all(getAudioIds(record).map(deleteAudio)).catch(() =>
+      notify('记录已删除，音频清理稍后重试'),
+    );
     setModal(null);
     notify('这条记录已删除');
   };

@@ -1,5 +1,6 @@
 import { getAudio } from './audio-store.js';
 import { getCard } from '../domain/cards.js';
+import { getAudioIds } from '../domain/diary.js';
 
 function blobToDataUrl(blob) {
   return new Promise((resolve, reject) => {
@@ -16,16 +17,21 @@ export async function createDiaryExport(
 ) {
   const items = await Promise.all(
     records.map(async (record) => {
-      let audio = null;
-      if (record.audioId) {
-        const blob = await readAudio(record.audioId);
+      const audios = [];
+      for (const id of getAudioIds(record)) {
+        const blob = await readAudio(id);
         if (!blob) throw new Error('An original recording is missing; export was not completed');
-        audio = await encodeAudio(blob);
+        audios.push({ id, data: await encodeAudio(blob) });
       }
-      return { ...record, card: record.cardId ? getCard(record.cardId).name : null, audio };
+      return {
+        ...record,
+        card: record.cardId ? getCard(record.cardId).name : null,
+        audio: audios[0]?.data || null,
+        audios,
+      };
     }),
   );
-  return { product: '拾念', version: 1, exportedAt: now, records: items };
+  return { product: '拾念', version: 2, exportedAt: now, records: items };
 }
 
 export function downloadDiary(data, date) {

@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Check, Mic, Pause, Play, Square, Trash2 } from 'lucide-react';
 import HoldToRecordButton from '../../components/HoldToRecordButton.jsx';
 import VoiceWaveform from './VoiceWaveform.jsx';
+import AudioClips from './AudioClips.jsx';
 
 export default function InlineRecorder({
   phase,
@@ -11,7 +12,7 @@ export default function InlineRecorder({
   seconds,
   error,
   asr,
-  audioUrl,
+  clips,
   stream,
   holding,
   cancelling,
@@ -20,8 +21,10 @@ export default function InlineRecorder({
   canSave,
   active,
   draftRef,
-  audioRef,
   title,
+  textId = 'today-journal-text',
+  textLabel = '此刻的一句话',
+  history = false,
   onTextChange,
   onStart,
   onStop,
@@ -37,6 +40,10 @@ export default function InlineRecorder({
   useEffect(() => {
     if (live.current) live.current.scrollTop = live.current.scrollHeight;
   }, [text, interim]);
+  useEffect(() => {
+    if (phase === 'finished' && draftRef.current)
+      draftRef.current.scrollTop = draftRef.current.scrollHeight;
+  }, [phase, draftRef]);
   useEffect(() => {
     if (!holding || captureSource !== 'mobile-nav') return;
     const bottom = writing.current.getBoundingClientRect().bottom;
@@ -55,7 +62,7 @@ export default function InlineRecorder({
       }[phase];
   return (
     <section
-      className={`inline-recorder voice-space ${phase} ${holding ? 'is-holding' : ''} ${cancelling ? 'is-cancelling' : ''}`}
+      className={`inline-recorder voice-space ${phase} ${history ? 'history-editor' : ''} ${holding ? 'is-holding' : ''} ${cancelling ? 'is-cancelling' : ''}`}
       aria-label={title}
       data-phase={phase}
     >
@@ -103,9 +110,9 @@ export default function InlineRecorder({
         ) : (
           <textarea
             ref={draftRef}
-            id="today-journal-text"
-            aria-label="此刻的一句话"
-            placeholder="这一刻，想留下一句什么？"
+            id={textId}
+            aria-label={textLabel}
+            placeholder={history ? '这一天，发生了什么？' : '这一刻，想留下一句什么？'}
             rows={3}
             value={text}
             onChange={(event) => onTextChange(event.target.value)}
@@ -124,19 +131,13 @@ export default function InlineRecorder({
         </p>
       )}
       <div className="inline-playback">
-        {audioUrl && !active && (
-          <div className="audio-review">
-            <audio ref={audioRef} controls src={audioUrl} />
-            <button
-              className="icon-button"
-              onClick={onRemoveAudio}
-              aria-label="移除录音"
-              title="移除录音"
-            >
-              <Trash2 size={16} />
-            </button>
-          </div>
-        )}
+        <AudioClips
+          clips={clips}
+          onRemove={onRemoveAudio}
+          disabled={saving}
+          paused={active}
+          collapsible
+        />
         {holding && (
           <p className="inline-gesture">
             {cancelling ? '松开取消 · 移回继续' : '上滑取消 · 松开结束'}
@@ -153,11 +154,11 @@ export default function InlineRecorder({
           aria-label={
             ['recording', 'paused'].includes(phase)
               ? '结束录音'
-              : phase === 'finished'
-                ? '重新录音'
+              : text || clips.length
+                ? '追加语音'
                 : '开始录音'
           }
-          title={['recording', 'paused'].includes(phase) ? '结束录音' : '开始录音，也可以按住说话'}
+          title={['recording', 'paused'].includes(phase) ? '结束录音' : '追加语音，按住说话'}
         >
           {['recording', 'paused'].includes(phase) ? (
             <Square size={18} fill="currentColor" />

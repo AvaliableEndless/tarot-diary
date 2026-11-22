@@ -2,12 +2,12 @@ import React from 'react';
 import { Check, ChevronRight, Leaf, Mic } from 'lucide-react';
 import { getCard } from '../domain/cards.js';
 import { dateKey, dayAgo, shortDate } from '../domain/dates.js';
-import { statusNames } from '../domain/diary.js';
+import { statusNames, getAudioIds } from '../domain/diary.js';
 
 export default function RecordListItem({ record, compact = false, onOpen }) {
   const item = record.cardId ? getCard(record.cardId) : null;
   const day = record.date === dateKey() ? '今天' : record.date === dayAgo(1) ? '昨天' : '那天';
-  const fallback = record.audioId
+  const fallback = getAudioIds(record).length
     ? '留了一段声音，等待补上一句话。'
     : record.status === 'pending' && item
       ? item.question.replace(/^今天/, day)

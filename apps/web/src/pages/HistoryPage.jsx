@@ -96,8 +96,7 @@ export default function HistoryPage({
               (_, i) => {
                 const key = dateKey(new Date(month.getFullYear(), month.getMonth(), i + 1));
                 const record = records.find((item) => item.date === key);
-                const done =
-                  record && (record.status !== 'pending' || record.text || record.audioId);
+                const done = hasReflection(record);
                 return (
                   <button
                     key={key}

@@ -4,8 +4,8 @@
 
 ## 已执行
 
-- `npm run check`：通过，包括 ESLint、28 个 Node 单元测试、78 张 WebP 素材与目录检查、Vite 生产构建。
-- `node node_modules/@playwright/test/cli.js test --workers 2`：使用已安装的 Edge，48 个浏览器测试全部通过。本机 npm 的参数转发拒绝 `--workers`，因此直接调用相同的 Playwright CLI。
+- `npm run check`：通过，包括 ESLint、32 个 Node 单元测试、78 张 WebP 素材与目录检查、Vite 生产构建。
+- `node node_modules/@playwright/test/cli.js test --workers 2`：使用已安装的 Edge，58 个浏览器测试全部通过。本机 npm 的参数转发拒绝 `--workers`，因此直接调用相同的 Playwright CLI。
 - 在 320、390、768、1440 px 宽度下验证今天、抽牌后、复盘、回看四种页面，未发现页面横向溢出或 JavaScript 异常。
 - 最终四屏设计板已重新截图并目视检查，文件为 `docs/ui-board.png`。
 - 桌面顶部录音入口、双栏回看、关键字与状态筛选、牌库键盘操作、未保存确认框焦点、横屏低高度和软键盘视口均有专门的浏览器用例。手机回看首屏显示一条完整记录，筛选栏按需展开。效果图为 `docs/desktop.png`、`docs/mobile-record.png` 和 `docs/mobile-history.png`。
@@ -32,6 +32,8 @@
 精简牌面补充验证：公开读取并核对 Labyrinthos 的 78 张正位关键词表，数据测试检查全牌 ID、三关键词、短句长度与牌名对应的来源链接。新增 3 个浏览器用例验证精简层级、来源与审判原文，并逐张测量 78 张牌在 320 px 下的布局：象征一行、联想不超过两行、牌名不碰工具、说明区域低于 210 px。手机、窄屏、桌面与详情已分别截图目视检查，文件为 `compact-mobile.png`、`compact-small.png`、`compact-desktop.png`、`compact-card-detail.png`。
 
 页内语音补充验证：在 390x844 与 320x640 下，长按前后底部入口坐标一致，卡片和实时文字位于导航上方，松手不会聚焦输入框，也没有 Modal/遮罩。页内麦克风本身的长按也保留指针捕获。通过 Web Audio 产生测试信号，canvas 有声时绘制超过 12 行像素，静音后回到低于 6 行，结束后所有音轨停止。连续两次口述时取消第二次，先前文字与原声音 SHA-256 均保持不变。另覆盖未保存离页、保存失败、键盘视口与跨午夜日期归属。截图为 `inline-voice-hold.png`、`inline-voice-review.png`、`inline-voice-small.png`、`inline-voice-desktop.png`，其中中文为模拟识别结果，音频为测试信号，不代表真人 ASR 效果。
+
+连续输入补充验证：新增 10 个浏览器用例，覆盖回看纯文字编辑不请求麦克风、同一日期原卡牌下多次语音追加、手动纠错后继续口述、保存刷新后再次追加、旧识别结果晚于录音结束仍不能修改人工正文、历史长按取消时恢复文字和音频、保存失败后重试保留全部录音、单段移除不删除正文、整日删除清理所有关联录音、旧版 `audioId` 的兼容读取和追加。320x640 与 1440x960 下检查正文不碰音频区域、保存操作保留底部间距且无横向溢出。截图为 `history-text-editor.png`、`history-voice-append.png`、`history-voice-small.png`、`history-voice-desktop.png`，使用测试麦克风和模拟中文识别，未采集真实环境声音。单元测试另验证 ASR 最终结果去重、结束/取消后忽略回调、全部录音导出及任一片段缺失时拒绝导出。
 
 ## 验证边界
 
