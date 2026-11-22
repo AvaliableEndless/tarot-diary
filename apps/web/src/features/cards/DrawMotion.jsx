@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { getCard } from '../../domain/cards.js';
 import CardBack from './CardBack.jsx';
 
 export default function DrawMotion({ session, targetRef, onPhase, onDone, onImageError }) {
@@ -12,7 +13,8 @@ export default function DrawMotion({ session, targetRef, onPhase, onDone, onImag
 
   useEffect(() => {
     let active = true;
-    const image = face.current;
+    const images = [face.current, ...root.current.querySelectorAll('.draw-side')];
+    const cleanups = [];
     const ready = () => {
       clearTimeout(timeout);
       if (active) callbacks.current.onPhase(motion === 'full' ? 'shuffle' : 'reveal');
@@ -25,12 +27,19 @@ export default function DrawMotion({ session, targetRef, onPhase, onDone, onImag
       }
     };
     const timeout = setTimeout(fail, 4000);
-    if (image.complete && image.naturalWidth > 0) ready();
-    else if (image.decode) image.decode().then(ready, fail);
-    else {
-      image.addEventListener('load', ready);
-      image.addEventListener('error', fail);
-    }
+    const decode = (image) => {
+      if (image.decode) return image.decode();
+      if (image.complete) return image.naturalWidth > 0 ? Promise.resolve() : Promise.reject();
+      return new Promise((resolve, reject) => {
+        image.addEventListener('load', resolve);
+        image.addEventListener('error', reject);
+        cleanups.push(() => {
+          image.removeEventListener('load', resolve);
+          image.removeEventListener('error', reject);
+        });
+      });
+    };
+    Promise.all(images.map(decode)).then(ready, fail);
 
     const skip = () => callbacks.current.onDone();
     const onVisibility = () => {
@@ -48,8 +57,7 @@ export default function DrawMotion({ session, targetRef, onPhase, onDone, onImag
     return () => {
       active = false;
       clearTimeout(timeout);
-      image.removeEventListener('load', ready);
-      image.removeEventListener('error', fail);
+      cleanups.forEach((cleanup) => cleanup());
       window.removeEventListener('resize', skip);
       window.removeEventListener('wheel', skip);
       window.removeEventListener('touchmove', skip);
@@ -126,6 +134,12 @@ export default function DrawMotion({ session, targetRef, onPhase, onDone, onImag
         transform: `translate(${origin.left}px, ${origin.top}px)`,
       }}
     >
+      {motion === 'full' && (
+        <>
+          <img className="draw-side draw-side-left" src={getCard(20).image} alt="" />
+          <img className="draw-side draw-side-right" src={getCard(18).image} alt="" />
+        </>
+      )}
       <div className="draw-flight" ref={flight}>
         <CardBack className="draw-reverse" />
         <img

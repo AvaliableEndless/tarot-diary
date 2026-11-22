@@ -116,8 +116,8 @@ export default function App() {
       setDrawSession({
         date: TODAY,
         card: chosen,
-        motion: motion.mode,
-        followSystem: motion.preference === 'system',
+        motion: replay ? 'full' : motion.mode,
+        followSystem: !replay && motion.preference === 'system',
         replay,
         phase: 'loading',
         origin: { left: origin.left, top: origin.top, width: origin.width, height: origin.height },

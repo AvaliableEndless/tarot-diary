@@ -7,9 +7,9 @@ export function useMotionPreference() {
   const [preference, setPreference] = useState(() => {
     try {
       const saved = localStorage.getItem(KEY);
-      return options.includes(saved) ? saved : 'system';
+      return options.includes(saved) ? saved : 'full';
     } catch {
-      return 'system';
+      return 'full';
     }
   });
   const [systemReduced, setSystemReduced] = useState(

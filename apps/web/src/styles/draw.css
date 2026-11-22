@@ -6,6 +6,9 @@
 .drawing .deck-stack > .card-back {
   visibility: hidden;
 }
+.motion-full .drawing .deck-stack .peek-card {
+  visibility: hidden;
+}
 .drawing .revealed-card {
   visibility: hidden;
 }
@@ -26,17 +29,21 @@
   font-size: 12px;
   padding: 0 4px;
 }
+.draw-replay.motion-full:not(.draw-landing) .card-reading,
+.draw-replay.motion-full:not(.draw-landing) .card-caption {
+  visibility: hidden;
+}
+.draw-replay .skip-draw {
+  top: -48px;
+}
 @media (min-width: 1100px) {
   .reading-actions {
     justify-content: flex-start;
     margin-top: 9px;
   }
-}
-
-.drawing .peek-card {
-  transition:
-    opacity 180ms,
-    transform 180ms;
+  .draw-replay .skip-draw {
+    top: -64px;
+  }
 }
 
 .daily-stage[aria-busy='true'] .draw-button {
@@ -46,20 +53,20 @@
   gap: 8px;
 }
 
-.draw-shuffle .peek-left {
+.draw-transition[data-phase='shuffle'] .draw-side-left {
   animation: draw-fan-left 480ms ease-in-out both !important;
 }
 
-.draw-shuffle .peek-right {
+.draw-transition[data-phase='shuffle'] .draw-side-right {
   animation: draw-fan-right 480ms ease-in-out both !important;
 }
 
-.draw-reveal .peek-left {
+.draw-transition[data-phase='reveal'] .draw-side-left {
   transform: translate(-12px, 12px) rotate(-9deg);
   opacity: 0.35;
 }
 
-.draw-reveal .peek-right {
+.draw-transition[data-phase='reveal'] .draw-side-right {
   transform: translate(12px, 12px) rotate(9deg);
   opacity: 0.35;
 }
@@ -91,9 +98,31 @@
 
 .draw-flight {
   position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   will-change: transform;
+}
+
+.draw-side {
+  position: absolute;
+  top: 5.4%;
+  width: 88.5%;
+  height: 89%;
+  object-fit: contain;
+  border-radius: 3px;
+  box-shadow: 0 5px 15px #223a3220;
+}
+.draw-side-left {
+  left: -11.5%;
+  transform: rotate(-13deg);
+}
+.draw-side-right {
+  right: -12%;
+  transform: rotate(12deg);
+}
+.draw-transition[data-phase='landing'] .draw-side {
+  visibility: hidden;
 }
 
 .draw-transition .draw-reverse,
@@ -196,12 +225,6 @@
 }
 .draw-transition[data-phase='landing'][data-motion='gentle'] {
   animation: draw-soft-out 160ms ease-out both !important;
-}
-.motion-gentle .draw-reveal .peek-left {
-  transform: rotate(-13deg);
-}
-.motion-gentle .draw-reveal .peek-right {
-  transform: rotate(12deg);
 }
 .draw-landing.motion-gentle .revealed-card {
   visibility: visible;

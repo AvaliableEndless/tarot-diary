@@ -159,13 +159,13 @@ export default function TodayPage({
               </button>
               <button
                 className="text-button replay-draw"
-                aria-label="重播翻牌"
-                title="重播这张牌，不会重抽"
+                aria-label="重播抽牌"
+                title="播放完整抽牌动画，不会重抽"
                 disabled={drawing}
                 onClick={() => draw(drawTarget.current?.getBoundingClientRect(), true)}
               >
                 <RotateCcw size={14} />
-                重播翻牌
+                重播抽牌
               </button>
             </div>
             {meaningOpen && <p className="meaning-detail">{card.detail}</p>}

@@ -74,6 +74,7 @@ test('leaving the page ends the motion and keeps the saved result', async ({ pag
 
 test('reduced motion shows a visible gentle crossfade', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.addInitScript(() => localStorage.setItem('shinian-motion-v1', 'system'));
   await page.goto('/');
   await page.locator('.draw-button').click();
   await expect(page.locator('.draw-transition')).toHaveAttribute('data-motion', 'gentle');
@@ -107,7 +108,7 @@ test('full motion overrides system reduction without Web Animations and replays 
   await page.getByRole('button', { name: '按住说话', exact: true }).click();
   await page.locator('#journal-text').fill('重播时保留这句话。');
   await page.getByRole('button', { name: '留好这一刻', exact: true }).click();
-  await page.getByRole('button', { name: '重播翻牌', exact: true }).click();
+  await page.getByRole('button', { name: /重播.*牌/, exact: true }).click();
   await expect(page.locator('.draw-transition')).toHaveAttribute('data-phase', 'reveal');
   await expect(page.locator('.today-quote')).toContainText('重播时保留这句话。');
   await expect(page.locator('.draw-transition')).toHaveCount(0);
@@ -133,6 +134,7 @@ test('recording can open during the motion with the same saved card', async ({ p
 });
 
 test('turning on reduced motion interrupts a running draw safely', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('shinian-motion-v1', 'system'));
   await page.goto('/');
   await page.locator('.draw-button').click();
   await expect(page.locator('.draw-transition')).toBeVisible();
@@ -144,6 +146,79 @@ test('turning on reduced motion interrupts a running draw safely', async ({ page
     `/cards/${String(saved[0].cardId).padStart(2, '0')}.webp`,
   );
 });
+
+test('the requested complete draw is the default even with system motion reduction', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await expect(page.locator('.app-shell')).toHaveAttribute('data-motion-mode', 'full');
+  await page.locator('.draw-button').click();
+  await expect(page.locator('.draw-transition')).toHaveAttribute('data-phase', 'shuffle');
+  await page.getByRole('button', { name: '跳过抽卡动画', exact: true }).click();
+});
+
+for (const width of [390, 1440]) {
+  test(`replay includes the moving three-card deck at ${width}px even in gentle mode`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.addInitScript(() => localStorage.setItem('shinian-motion-v1', 'gentle'));
+    await page.goto('/?preview=drawn');
+    const originalCard = await page.locator('.revealed-card img').getAttribute('src');
+    await page.getByRole('button', { name: /重播.*牌/, exact: true }).click();
+    const motion = page.locator('.draw-transition');
+    await expect(motion).toHaveAttribute('data-motion', 'full');
+    await expect(motion).toHaveAttribute('data-phase', 'shuffle');
+    await expect(motion.locator('.draw-side')).toHaveCount(2);
+    await expect(page.locator('.card-reading')).toBeHidden();
+    const movement = await motion.evaluate((root) => {
+      const cards = [...root.querySelectorAll('.draw-side')];
+      const animations = root.getAnimations({ subtree: true });
+      animations.forEach((animation) => {
+        animation.pause();
+        animation.currentTime = 0;
+      });
+      const centers = () =>
+        cards.map((card) => {
+          const box = card.getBoundingClientRect();
+          return box.x + box.width / 2;
+        });
+      const initial = centers();
+      animations.forEach((animation) => {
+        animation.currentTime = 200;
+      });
+      const spread = centers();
+      const bounds = cards.map((card) => card.getBoundingClientRect());
+      const skip = document.querySelector('.skip-draw').getBoundingClientRect();
+      const deckBounds = [...bounds, root.querySelector('.draw-flight').getBoundingClientRect()];
+      animations.forEach((animation) => animation.play());
+      return {
+        leftTravel: initial[0] - spread[0],
+        rightTravel: spread[1] - initial[1],
+        imagesLoaded: cards.every((card) => card.complete && card.naturalWidth > 0),
+        inViewport: bounds.every((box) => box.left >= 0 && box.right <= innerWidth),
+        skipClear: deckBounds.every(
+          (box) =>
+            skip.right <= box.left ||
+            skip.left >= box.right ||
+            skip.bottom <= box.top ||
+            skip.top >= box.bottom,
+        ),
+      };
+    });
+    expect(movement.imagesLoaded).toBe(true);
+    expect(movement.inViewport).toBe(true);
+    expect(movement.skipClear).toBe(true);
+    expect(movement.leftTravel).toBeGreaterThan(12);
+    expect(movement.rightTravel).toBeGreaterThan(12);
+    await expect(motion).toHaveCount(0);
+    await expect(page.locator('.card-reading')).toBeVisible();
+    await expect(page.locator('.revealed-card img')).toHaveAttribute('src', originalCard);
+    expect(await page.evaluate(() => localStorage.getItem('shinian-motion-v1'))).toBe('gentle');
+  });
+}
 
 test('a slow image is never turned over before decoding', async ({ page }) => {
   await page.addInitScript(() => {
