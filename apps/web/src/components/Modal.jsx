@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-export default function Modal({ children, onClose }) {
+export default function Modal({ children, onClose, nonBlocking = false }) {
   const ref = useRef();
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
@@ -15,6 +15,7 @@ export default function Modal({ children, onClose }) {
     else closeRef.current();
   };
   useEffect(() => {
+    if (nonBlocking) return;
     const before = document.activeElement;
     ref.current.focus({ preventScroll: true });
     const original = {
@@ -33,7 +34,7 @@ export default function Modal({ children, onClose }) {
       const scope = ref.current.querySelector('[role="alertdialog"]') || ref.current;
       const focusable = Array.from(
         scope.querySelectorAll(
-          'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), a[href], audio[controls], [tabindex="0"]',
+          'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], audio[controls], [tabindex="0"]',
         ),
       ).filter((element) => element.getClientRects().length);
       const first = focusable[0],
@@ -61,18 +62,18 @@ export default function Modal({ children, onClose }) {
       document.removeEventListener('keydown', onKey);
       if (before?.isConnected) before.focus({ preventScroll: true });
     };
-  }, []);
+  }, [nonBlocking]);
   return (
     <div
-      className="modal-backdrop"
+      className={`modal-backdrop ${nonBlocking ? 'hold-backdrop' : ''}`}
       onClick={(event) => event.target === event.currentTarget && requestClose()}
     >
       <section
         className="modal-sheet"
         ref={ref}
         tabIndex={-1}
-        role="dialog"
-        aria-modal="true"
+        role={nonBlocking ? 'status' : 'dialog'}
+        aria-modal={nonBlocking ? undefined : true}
         aria-label="拾念记录详情"
       >
         <span className="sheet-handle" />

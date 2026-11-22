@@ -72,13 +72,49 @@ test('leaving the page ends the motion and keeps the saved result', async ({ pag
   );
 });
 
-test('reduced motion reveals the result immediately', async ({ page }) => {
+test('reduced motion shows a visible gentle crossfade', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await page.locator('.draw-button').click();
+  await expect(page.locator('.draw-transition')).toHaveAttribute('data-motion', 'gentle');
+  await expect(page.locator('.draw-transition')).toHaveAttribute('data-phase', 'reveal');
+  await expect(page.locator('.draw-front')).toHaveCSS('animation-name', 'draw-soft-in');
   await expect(page.locator('.draw-transition')).toHaveCount(0);
   await expect(page.locator('.revealed-card')).toBeVisible();
   expect(await savedDraw(page)).toHaveLength(1);
+});
+
+test('full motion overrides system reduction without Web Animations and replays the saved card', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.addInitScript(() => {
+    Element.prototype.animate = undefined;
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: '设置与数据', exact: true }).click();
+  await page.getByRole('combobox', { name: '抽牌动效', exact: true }).selectOption('full');
+  await page.getByRole('button', { name: '关闭设置', exact: true }).click();
+  await page.reload();
+  await expect(page.locator('.app-shell')).toHaveAttribute('data-motion-mode', 'full');
+  await page.locator('.draw-button').click();
+  await expect(page.locator('.draw-transition')).toHaveAttribute('data-phase', 'shuffle');
+  await expect(page.locator('.draw-flight')).toHaveCSS('animation-duration', '0.48s');
+  await expect(page.locator('.draw-transition')).toHaveAttribute('data-phase', 'reveal');
+  await expect(page.locator('.draw-flight')).toHaveCSS('animation-duration', '1.1s');
+  const before = await savedDraw(page);
+  await expect(page.locator('.draw-transition')).toHaveCount(0);
+  await page.getByRole('button', { name: '按住说话', exact: true }).click();
+  await page.locator('#journal-text').fill('重播时保留这句话。');
+  await page.getByRole('button', { name: '留好这一刻', exact: true }).click();
+  await page.getByRole('button', { name: '重播翻牌', exact: true }).click();
+  await expect(page.locator('.draw-transition')).toHaveAttribute('data-phase', 'reveal');
+  await expect(page.locator('.today-quote')).toContainText('重播时保留这句话。');
+  await expect(page.locator('.draw-transition')).toHaveCount(0);
+  const after = await savedDraw(page);
+  expect(after).toHaveLength(1);
+  expect(after[0].cardId).toBe(before[0].cardId);
+  expect(after[0].text).toBe('重播时保留这句话。');
 });
 
 test('recording can open during the motion with the same saved card', async ({ page }) => {
@@ -86,7 +122,7 @@ test('recording can open during the motion with the same saved card', async ({ p
   await page.locator('.draw-button').click();
   await expect(page.locator('.draw-transition')).toBeVisible();
   const saved = await savedDraw(page);
-  await page.getByRole('button', { name: '留一句，打开录音', exact: true }).click();
+  await page.getByRole('button', { name: '按住说话', exact: true }).click();
   await expect(page.locator('.draw-transition')).toHaveCount(0);
   await expect(page.locator('.record-question img')).toHaveAttribute(
     'src',

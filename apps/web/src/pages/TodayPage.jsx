@@ -9,15 +9,20 @@ import {
   Mic,
   Pencil,
   Plus,
+  RotateCcw,
   Sparkles,
 } from 'lucide-react';
 import { getCard } from '../domain/cards.js';
 import CardBack from '../features/cards/CardBack.jsx';
+import HoldToRecordButton from '../components/HoldToRecordButton.jsx';
 
 export default function TodayPage({
   card,
   today,
   drawing,
+  replaying,
+  motionMode,
+  voiceGesture,
   drawPhase,
   drawTarget,
   skipDraw,
@@ -63,7 +68,7 @@ export default function TodayPage({
         </button>
       </div>
       <section
-        className={`daily-stage ${card ? 'is-drawn' : ''} ${drawPhase === 'landing' ? 'draw-landing' : ''}`}
+        className={`daily-stage motion-${motionMode} ${card ? 'is-drawn' : ''} ${replaying ? 'draw-replay' : ''} ${drawPhase === 'landing' ? 'draw-landing' : ''}`}
         aria-label="今日抽牌"
         aria-busy={drawing}
       >
@@ -143,24 +148,40 @@ export default function TodayPage({
               {card.title}
             </h2>
             <p className="daily-prompt">{card.prompt}</p>
-            <button
-              className="text-button meaning-toggle"
-              onClick={() => setMeaningOpen(!meaningOpen)}
-              aria-expanded={meaningOpen}
-            >
-              {meaningOpen ? '收起牌意' : '读一读这张牌'}
-              <ChevronRight size={14} className={meaningOpen ? 'turn-down' : ''} />
-            </button>
+            <div className="reading-actions">
+              <button
+                className="text-button meaning-toggle"
+                onClick={() => setMeaningOpen(!meaningOpen)}
+                aria-expanded={meaningOpen}
+              >
+                {meaningOpen ? '收起牌意' : '读一读这张牌'}
+                <ChevronRight size={14} className={meaningOpen ? 'turn-down' : ''} />
+              </button>
+              <button
+                className="text-button replay-draw"
+                aria-label="重播翻牌"
+                title="重播这张牌，不会重抽"
+                disabled={drawing}
+                onClick={() => draw(drawTarget.current?.getBoundingClientRect(), true)}
+              >
+                <RotateCcw size={14} />
+                重播翻牌
+              </button>
+            </div>
             {meaningOpen && <p className="meaning-detail">{card.detail}</p>}
             <div className="saved-card-label">
               <CheckCheck size={15} />
               今天的牌，已为你留好
             </div>
-            <button className="primary-button today-record-button" onClick={() => openRecord()}>
+            <HoldToRecordButton
+              className="primary-button today-record-button"
+              {...voiceGesture}
+              aria-label={`${today?.text || today?.audioId ? '再看看今天的一句话' : '现在想留一句'}，按住说话`}
+            >
               <Mic size={17} />
               {today?.text || today?.audioId ? '再看看今天的一句话' : '现在想留一句'}
               <ArrowRight size={16} />
-            </button>
+            </HoldToRecordButton>
           </div>
         ) : (
           <div className="draw-action">

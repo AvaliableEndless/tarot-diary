@@ -20,7 +20,7 @@ npm run check
 
 工程版使用 React 18 + Vite 6、JavaScript / JSX 和 CSS；桌面与手机共用响应式页面。当前没有后端数据库：LocalStorage 保存文字与抽牌，IndexedDB 保存录音，各设备独立保存，尚不支持账号与跨设备同步。
 
-每日抽牌新增洗牌、抽离、翻面与落位动画，可跳过并适配减少动态效果：[查看动效预览与设计](docs/draw-motion.md)。
+每日抽牌包含洗牌、抽离、翻面与落位动画，可跳过或重播；设置可选完整、柔和或跟随系统，减少动态效果时保留柔和过渡：[查看动效预览与设计](docs/draw-motion.md)。「留一句」支持按住直接录音转写、松开确认、上滑取消：[语音交互设计](docs/voice-ux.md)。
 
 ![拾念界面设计](docs/ui-board.png)
 

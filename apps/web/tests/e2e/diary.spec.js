@@ -14,7 +14,7 @@ test('daily draw, yesterday review and editable journal survive refresh', async 
   await expect(page.locator('.modal-sheet')).toHaveCount(0);
   await expect(page.locator('.mobile-yesterday')).toContainText('没有发生');
 
-  await page.getByRole('button', { name: '留一句，打开录音', exact: true }).click();
+  await page.getByRole('button', { name: '按住说话', exact: true }).click();
   await page.locator('#journal-text').fill('今天完成了可以试用的第一步。');
   await page.keyboard.press('Escape');
   await expect(page.getByRole('alertdialog')).toBeVisible();
@@ -59,7 +59,7 @@ test('corrupted stored data is not silently replaced', async ({ page }) => {
 
 test('a failed text write leaves the editor and draft available', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '留一句，打开录音', exact: true }).click();
+  await page.getByRole('button', { name: '按住说话', exact: true }).click();
   await page.locator('#journal-text').fill('这句话不能因为保存失败而丢失。');
   await page.evaluate(() => {
     Storage.prototype.setItem = () => {
@@ -107,7 +107,7 @@ test.describe('audio capture', () => {
       };
     });
     await page.goto('/');
-    await page.getByRole('button', { name: '留一句，打开录音', exact: true }).click();
+    await page.getByRole('button', { name: '按住说话', exact: true }).click();
     await page.getByRole('button', { name: '开始录音', exact: true }).click();
     await expect(page.locator('.record-error')).toBeVisible();
     expect(
@@ -123,7 +123,7 @@ test.describe('audio capture', () => {
       window.webkitSpeechRecognition = undefined;
     });
     await page.goto('/');
-    await page.getByRole('button', { name: '留一句，打开录音', exact: true }).click();
+    await page.getByRole('button', { name: '按住说话', exact: true }).click();
     await page.getByRole('button', { name: '开始录音', exact: true }).click();
     await expect(page.locator('.voice-space')).toHaveClass(/recording/);
     await page.getByRole('button', { name: '暂停录音', exact: true }).click();
@@ -136,7 +136,7 @@ test.describe('audio capture', () => {
     await page.locator('#journal-text').fill('测试原始录音保存。');
     await page.getByRole('button', { name: '留好这一刻', exact: true }).click();
     await page.reload();
-    await page.getByRole('button', { name: '留一句，打开录音', exact: true }).click();
+    await page.getByRole('button', { name: '按住说话', exact: true }).click();
     await expect(page.locator('.audio-review audio')).toHaveAttribute('src', /^blob:/);
     await page.getByRole('button', { name: '关闭记录', exact: true }).click();
     await page.getByRole('button', { name: '设置与数据', exact: true }).click();
@@ -154,13 +154,13 @@ test.describe('audio capture', () => {
       ),
     ).toBe(true);
     await page.getByRole('button', { name: '关闭设置', exact: true }).click();
-    await page.getByRole('button', { name: '留一句，打开录音', exact: true }).click();
+    await page.getByRole('button', { name: '按住说话', exact: true }).click();
     await page.locator('#journal-text').fill('');
     await page.getByRole('button', { name: '移除录音', exact: true }).click();
     await expect(page.locator('.save-button')).toBeDisabled();
     await page.getByRole('button', { name: '关闭记录', exact: true }).click();
     await page.getByRole('button', { name: '放弃并离开', exact: true }).click();
-    await page.getByRole('button', { name: '留一句，打开录音', exact: true }).click();
+    await page.getByRole('button', { name: '按住说话', exact: true }).click();
     await expect(page.locator('.audio-review audio')).toHaveAttribute('src', /^blob:/);
     await expect(page.locator('#journal-text')).toHaveValue('测试原始录音保存。');
   });
@@ -236,7 +236,7 @@ test('closing and reopening the dirty confirmation keeps keyboard focus inside',
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '留一句，打开录音', exact: true }).click();
+  await page.getByRole('button', { name: '按住说话', exact: true }).click();
   await page.locator('#journal-text').fill('明天可以回来看。');
   await page.keyboard.press('Escape');
   const confirm = page.getByRole('alertdialog');
@@ -270,7 +270,7 @@ test('the save action remains visible with a reduced visual viewport', async ({ 
     Object.defineProperty(window, 'visualViewport', { value: viewport });
   });
   await page.goto('/');
-  await page.getByRole('button', { name: '留一句，打开录音', exact: true }).click();
+  await page.getByRole('button', { name: '按住说话', exact: true }).click();
   await page.locator('#journal-text').fill('键盘打开后也要能保存。');
   await page.evaluate(() => {
     window.visualViewport.height = 400;

@@ -1,0 +1,129 @@
+.hold-to-record {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.capture-nav.is-holding > span,
+.desktop-capture.is-holding {
+  background: #a44534;
+  color: #fff;
+}
+.capture-nav.is-holding > span {
+  box-shadow: 0 0 0 7px #bc584522;
+}
+.capture-nav.is-cancelling > span {
+  background: #7b3329;
+}
+.hold-backdrop {
+  pointer-events: none;
+  background: transparent;
+  backdrop-filter: none;
+  align-items: flex-end;
+  padding-bottom: 96px;
+}
+.hold-backdrop .modal-sheet {
+  width: min(360px, calc(100% - 32px));
+  max-height: calc(var(--visible-height, 100dvh) - 110px);
+  border: 1px solid #d8e1d1;
+  box-shadow: 0 12px 45px #243a3226;
+  border-radius: 8px;
+}
+.hold-backdrop .sheet-handle {
+  display: none;
+}
+.hold-recording {
+  padding: 22px;
+}
+.hold-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  color: var(--green);
+  font-size: 14px;
+}
+.hold-heading .timer {
+  font-size: 13px;
+  color: var(--muted);
+}
+.hold-mic {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f1e0d8;
+  color: var(--coral);
+  margin: 20px auto 15px;
+}
+.hold-transcript {
+  min-height: 54px;
+  max-height: 81px;
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 1.8;
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+.hold-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  margin-top: 16px;
+  color: var(--muted);
+}
+.hold-footer strong {
+  font-weight: 500;
+  color: var(--coral);
+}
+.hold-cancel {
+  background: #fcf0ec;
+}
+.hold-cancel .hold-heading,
+.hold-cancel .hold-transcript,
+.hold-cancel .hold-footer strong {
+  color: #a44534;
+}
+.settings-motion {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.settings-motion > span {
+  flex: 1;
+  font-size: 15px;
+}
+.settings-motion small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 5px;
+}
+.settings-motion select {
+  font: inherit;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid #d4dfca;
+  border-radius: 5px;
+  color: var(--green);
+  background: transparent;
+}
+@media (max-width: 760px) {
+  .hold-backdrop {
+    padding-bottom: calc(104px + env(safe-area-inset-bottom));
+  }
+  .hold-backdrop .modal-sheet {
+    padding-bottom: 0;
+  }
+  .settings-motion select {
+    font-size: 16px;
+  }
+}

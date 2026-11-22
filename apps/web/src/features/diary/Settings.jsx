@@ -3,7 +3,15 @@ import { ChevronRight, Download, Leaf, Sparkles, Trash2, X } from 'lucide-react'
 import { dateKey } from '../../domain/dates.js';
 import { createDiaryExport, downloadDiary } from '../../services/export-diary.js';
 
-export default function Settings({ records, onClose, notify, onClearDemo }) {
+export default function Settings({
+  records,
+  onClose,
+  notify,
+  onClearDemo,
+  motionPreference,
+  motionMode,
+  onMotionChange,
+}) {
   const [exporting, setExporting] = useState(false);
   const [confirmDemo, setConfirmDemo] = useState(false);
   const clearDemo = () => {
@@ -42,6 +50,20 @@ export default function Settings({ records, onClose, notify, onClearDemo }) {
           <p>文字和录音存于当前浏览器。更换设备或清理浏览器前，请先导出。</p>
         </div>
       </div>
+      <label className="settings-motion">
+        <span>
+          抽牌动效<small>{motionMode === 'full' ? '完整翻牌' : '柔和过渡'}</small>
+        </span>
+        <select
+          aria-label="抽牌动效"
+          value={motionPreference}
+          onChange={(event) => onMotionChange(event.target.value)}
+        >
+          <option value="system">跟随系统</option>
+          <option value="full">完整</option>
+          <option value="gentle">柔和</option>
+        </select>
+      </label>
       <button className="settings-row" onClick={exportRecords} disabled={exporting}>
         <Download size={19} />
         <span>

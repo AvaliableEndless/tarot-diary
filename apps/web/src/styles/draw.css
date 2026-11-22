@@ -6,6 +6,32 @@
 .drawing .deck-stack > .card-back {
   visibility: hidden;
 }
+.drawing .revealed-card {
+  visibility: hidden;
+}
+.card-area {
+  position: relative;
+}
+.reading-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.reading-actions .meaning-toggle {
+  margin: 0;
+}
+.replay-draw {
+  min-height: 44px;
+  font-size: 12px;
+  padding: 0 4px;
+}
+@media (min-width: 1100px) {
+  .reading-actions {
+    justify-content: flex-start;
+    margin-top: 9px;
+  }
+}
 
 .drawing .peek-card {
   transition:
@@ -21,11 +47,11 @@
 }
 
 .draw-shuffle .peek-left {
-  animation: draw-fan-left 480ms ease-in-out both;
+  animation: draw-fan-left 480ms ease-in-out both !important;
 }
 
 .draw-shuffle .peek-right {
-  animation: draw-fan-right 480ms ease-in-out both;
+  animation: draw-fan-right 480ms ease-in-out both !important;
 }
 
 .draw-reveal .peek-left {
@@ -97,8 +123,8 @@
   visibility: hidden;
 }
 
-.draw-landing .card-reading,
-.draw-landing .card-caption {
+.draw-landing:not(.draw-replay) .card-reading,
+.draw-landing:not(.draw-replay) .card-caption {
   animation: draw-reading-in 250ms ease-out 150ms both;
 }
 
@@ -139,12 +165,133 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .draw-transition {
-    display: none;
+.draw-transition[data-phase='shuffle'] .draw-flight {
+  animation: draw-card-shuffle 480ms ease-in-out both !important;
+}
+.draw-transition[data-phase='reveal'][data-motion='full'] .draw-flight {
+  animation: draw-card-reveal 1100ms ease-in-out both !important;
+}
+.draw-transition[data-phase='reveal'][data-motion='full'] .draw-reverse {
+  animation: draw-back-turn 1100ms ease-in-out both !important;
+}
+.draw-transition[data-phase='reveal'][data-motion='full'] .draw-front {
+  animation: draw-face-turn 1100ms ease-in-out both !important;
+}
+.draw-transition[data-phase='landing'] .draw-front {
+  opacity: 1;
+  transform: scaleX(1);
+}
+.draw-transition[data-phase='landing'] .draw-reverse {
+  opacity: 0;
+}
+.draw-transition[data-phase='landing'][data-motion='full'] {
+  animation: draw-card-land 420ms cubic-bezier(0.2, 0.75, 0.2, 1) both !important;
+}
+.draw-transition[data-phase='reveal'][data-motion='gentle'] .draw-reverse {
+  animation: draw-soft-out 240ms ease-out both !important;
+}
+.draw-transition[data-phase='reveal'][data-motion='gentle'] .draw-front {
+  transform: scaleX(1);
+  animation: draw-soft-in 240ms ease-out both !important;
+}
+.draw-transition[data-phase='landing'][data-motion='gentle'] {
+  animation: draw-soft-out 160ms ease-out both !important;
+}
+.motion-gentle .draw-reveal .peek-left {
+  transform: rotate(-13deg);
+}
+.motion-gentle .draw-reveal .peek-right {
+  transform: rotate(12deg);
+}
+.draw-landing.motion-gentle .revealed-card {
+  visibility: visible;
+  animation: draw-soft-in 160ms ease-out both !important;
+}
+.draw-landing.motion-gentle .card-reading,
+.draw-landing.motion-gentle .card-caption {
+  animation: draw-soft-in 160ms ease-out both !important;
+}
+
+@keyframes draw-card-shuffle {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
   }
-  .draw-landing .revealed-card,
-  .drawing .deck-stack > .card-back {
-    visibility: visible;
+  30% {
+    transform: translate(-4px, -3px) rotate(-2deg);
+  }
+  65% {
+    transform: translate(4px, -2px) rotate(2deg);
+  }
+}
+@keyframes draw-card-reveal {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  30% {
+    transform: translateY(-29px) rotate(-4deg) scale(1.035);
+  }
+  56% {
+    transform: translateY(-30px) rotate(-2deg) scale(1.035);
+  }
+  88% {
+    transform: translateY(-5px) rotate(1deg) scale(1.01);
+  }
+}
+@keyframes draw-back-turn {
+  0%,
+  27% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  52% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  53%,
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+@keyframes draw-face-turn {
+  0%,
+  52% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  53% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  88%,
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+@keyframes draw-card-land {
+  from {
+    transform: translate(var(--from-x), var(--from-y)) scale(1, 1);
+  }
+  to {
+    transform: translate(var(--to-x), var(--to-y)) scale(var(--to-scale-x), var(--to-scale-y));
+  }
+}
+@keyframes draw-soft-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes draw-soft-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }

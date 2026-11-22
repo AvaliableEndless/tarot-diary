@@ -4,5 +4,6 @@ import App from './app/App.jsx';
 import './styles/app.css';
 import './styles/adaptive.css';
 import './styles/draw.css';
+import './styles/hold-recording.css';
 
 createRoot(document.getElementById('root')).render(<App />);

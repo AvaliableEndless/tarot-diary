@@ -17,14 +17,17 @@ import { hasReflection } from '../domain/diary.js';
 import { useDiary } from '../hooks/useDiary.js';
 import { useLocalDay } from '../hooks/useLocalDay.js';
 import { useViewportMetrics } from '../hooks/useViewportMetrics.js';
+import { useMotionPreference } from '../hooks/useMotionPreference.js';
+import HoldToRecordButton from '../components/HoldToRecordButton.jsx';
 import Modal from '../components/Modal.jsx';
 import RecordListItem from '../components/RecordListItem.jsx';
 import YesterdaySection from '../components/YesterdaySection.jsx';
 import TodayPage from '../pages/TodayPage.jsx';
 import HistoryPage from '../pages/HistoryPage.jsx';
 import DeckPage from '../pages/DeckPage.jsx';
-import DrawTransition from '../features/cards/DrawTransition.jsx';
-const Recorder = lazy(() => import('../features/diary/Recorder.jsx'));
+import DrawMotion from '../features/cards/DrawMotion.jsx';
+const loadRecorder = () => import('../features/diary/Recorder.jsx');
+const Recorder = lazy(loadRecorder);
 const EntryDetail = lazy(() => import('../features/diary/EntryDetail.jsx'));
 const Settings = lazy(() => import('../features/diary/Settings.jsx'));
 const CardDetail = lazy(() => import('../features/cards/CardDetail.jsx'));
@@ -33,6 +36,7 @@ const PREVIEW = query.get('preview');
 
 export default function App() {
   useViewportMetrics();
+  const motion = useMotionPreference();
   const TODAY = useLocalDay();
   const {
     records,
@@ -56,11 +60,15 @@ export default function App() {
   const toastTimer = useRef();
   const drawLock = useRef(false);
   const drawTarget = useRef();
+  const holdCapture = useRef();
+  const holdSequence = useRef(0);
   const today = records.find((record) => record.date === TODAY);
   const yesterday = records.find((record) => record.date === dayAgo(1));
   const card = today?.cardId ? getCard(today.cardId) : null;
   const drawing = Boolean(drawSession);
-  const visibleCard = drawing && drawSession.phase !== 'landing' ? null : card;
+  const visibleCard =
+    drawing && !drawSession.replay && drawSession.phase !== 'landing' ? null : card;
+  const holding = Boolean(modal?.type === 'record' && modal.hold?.held);
   const completed = records.filter(hasReflection);
   useEffect(
     () => () => {
@@ -85,30 +93,32 @@ export default function App() {
   useEffect(() => {
     if (drawSession && (drawSession.date !== TODAY || modal || tab !== 'today')) finishDraw();
   }, [TODAY, modal, tab, drawSession?.date]);
-  const draw = (origin) => {
-    if (card || drawLock.current) return;
+  const draw = (origin, replay = false) => {
+    if ((!replay && card) || (replay && !card) || drawLock.current) return;
     drawLock.current = true;
     try {
-      const random = new Uint32Array(1);
-      crypto.getRandomValues(random);
-      const saved = updateRecord(TODAY, {
-        cardId: cards[random[0] % cards.length].id,
-        demo: false,
-      });
-      const chosen = getCard(saved.find((record) => record.date === TODAY).cardId);
+      let chosen = card;
+      if (!replay) {
+        const random = new Uint32Array(1);
+        crypto.getRandomValues(random);
+        const saved = updateRecord(TODAY, {
+          cardId: cards[random[0] % cards.length].id,
+          demo: false,
+        });
+        chosen = getCard(saved.find((record) => record.date === TODAY).cardId);
+      }
       setMeaningOpen(false);
       if (navigator.vibrate) navigator.vibrate(20);
-      if (
-        !origin?.width ||
-        matchMedia('(prefers-reduced-motion: reduce)').matches ||
-        !Element.prototype.animate
-      ) {
+      if (!origin?.width) {
         finishDraw();
         return;
       }
       setDrawSession({
         date: TODAY,
         card: chosen,
+        motion: motion.mode,
+        followSystem: motion.preference === 'system',
+        replay,
         phase: 'loading',
         origin: { left: origin.left, top: origin.top, width: origin.width, height: origin.height },
       });
@@ -120,6 +130,35 @@ export default function App() {
   const openRecord = (date = TODAY) => {
     finishDraw();
     setModal({ type: 'record', date });
+  };
+  const startHold = () => {
+    if (modal || holdCapture.current?.held) return false;
+    finishDraw();
+    const capture = { id: ++holdSequence.current, held: true, cancelled: false };
+    holdCapture.current = capture;
+    setModal({ type: 'record', date: TODAY, hold: capture });
+    return true;
+  };
+  const moveHold = (cancelled) => {
+    const capture = holdCapture.current;
+    if (!capture?.held) return;
+    capture.cancelled = cancelled;
+    setModal((current) => (current?.hold === capture ? { ...current } : current));
+  };
+  const endHold = (cancelled) => {
+    const capture = holdCapture.current;
+    if (!capture?.held) return;
+    capture.held = false;
+    capture.cancelled = cancelled;
+    if (cancelled) setModal((current) => (current?.hold === capture ? null : current));
+    else setModal((current) => (current?.hold === capture ? { ...current } : current));
+  };
+  const voiceGesture = {
+    onTap: () => openRecord(),
+    onHoldStart: startHold,
+    onHoldMove: moveHold,
+    onHoldEnd: endHold,
+    preload: loadRecorder,
   };
   const removeRecord = async (record) => {
     try {
@@ -154,7 +193,12 @@ export default function App() {
 
   return (
     <>
-      <div className={`app-shell ${PREVIEW ? 'preview-shell' : ''}`} inert={modal ? '' : undefined}>
+      <div
+        className={`app-shell ${PREVIEW ? 'preview-shell' : ''}`}
+        inert={modal && !holding ? '' : undefined}
+        data-motion-mode={motion.mode}
+        data-system-motion={motion.systemReduced ? 'reduced' : 'full'}
+      >
         <header className="app-header">
           <button className="wordmark" onClick={() => navigate('today')} aria-label="拾念首页">
             <span className="brand-mark">
@@ -182,10 +226,14 @@ export default function App() {
             ))}
           </nav>
           <div className="header-actions">
-            <button className="primary-button desktop-capture" onClick={() => openRecord()}>
+            <HoldToRecordButton
+              className="primary-button desktop-capture"
+              aria-label="留一句，按住说话"
+              {...voiceGesture}
+            >
               <Mic size={17} />
               留一句
-            </button>
+            </HoldToRecordButton>
             <button
               className="icon-button settings-button"
               aria-label="设置与数据"
@@ -208,6 +256,9 @@ export default function App() {
                 card={visibleCard}
                 today={today}
                 drawing={drawing}
+                replaying={Boolean(drawSession?.replay)}
+                motionMode={drawSession?.motion || motion.mode}
+                voiceGesture={voiceGesture}
                 drawPhase={drawSession?.phase}
                 drawTarget={drawTarget}
                 skipDraw={finishDraw}
@@ -324,16 +375,12 @@ export default function App() {
             <Sun size={22} strokeWidth={1.6} />
             <span>今天</span>
           </button>
-          <button
-            className="capture-nav"
-            onClick={() => openRecord()}
-            aria-label="留一句，打开录音"
-          >
+          <HoldToRecordButton className="capture-nav" {...voiceGesture} aria-label="按住说话">
             <span>
               <Mic size={23} strokeWidth={1.7} />
             </span>
-            <small>留一句</small>
-          </button>
+            <small>按住说话</small>
+          </HoldToRecordButton>
           <button
             className={tab === 'history' ? 'active' : ''}
             aria-current={tab === 'history' ? 'page' : undefined}
@@ -351,7 +398,7 @@ export default function App() {
         </div>
       )}
       {drawSession && (
-        <DrawTransition
+        <DrawMotion
           session={drawSession}
           targetRef={drawTarget}
           onPhase={(phase) => setDrawSession((current) => (current ? { ...current, phase } : null))}
@@ -360,7 +407,7 @@ export default function App() {
         />
       )}
       {modal && (
-        <Modal onClose={() => setModal(null)}>
+        <Modal nonBlocking={holding} onClose={() => setModal(null)}>
           <Suspense
             fallback={
               <div className="dialog-loading" role="status">
@@ -372,6 +419,9 @@ export default function App() {
               <Recorder
                 record={records.find((record) => record.date === modal.date)}
                 date={modal.date}
+                holdCapture={modal.hold}
+                holding={holding}
+                cancelling={Boolean(modal.hold?.cancelled)}
                 onClose={() => setModal(null)}
                 onSave={async (patch) => {
                   updateRecord(modal.date, patch);
@@ -393,6 +443,12 @@ export default function App() {
                 records={records}
                 onClose={() => setModal(null)}
                 notify={notify}
+                motionPreference={motion.preference}
+                motionMode={motion.mode}
+                onMotionChange={(value) => {
+                  const saved = motion.setPreference(value);
+                  if (!saved) notify('动效已切换，本次设置未能保存');
+                }}
                 onClearDemo={() => {
                   clearDemo();
                   notify('示例记录已清除');
