@@ -1,0 +1,13 @@
+/output/
+/tmp/
+/docs/
+/shots/
+/cards/
+node_modules/
+dist/
+test-results/
+playwright-report/
+.git/
+.env
+.env.*
+*.log
